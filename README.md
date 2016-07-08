@@ -16,9 +16,7 @@ Obtaining
 ---------
 For Clojure, in your `project.clj` file, add:
 
-```clojure
-[com.zensols.tools/actioncli "0.0.1"]
-```
+[![Clojars Project](http://clojars.org/clj-actioncli/latest-version.svg)](http://clojars.org/clj-actioncli)
 
 For Java, in your `pom.xml` file, add:
 ```xml
@@ -39,8 +37,9 @@ For Java, in your `pom.xml` file, add:
 Usage
 -----
 This package supports:
-* [Action Commands](#action commands)
-* [Resource Location](#resource location)
+* [Action Commands](#action-commands)
+* [Resource Location](#resource-location)
+* [Executing Action Commands](#executing)
 
 # Action Commands
 Say you're writing a web service (among other things an uberjar might have) and
@@ -129,15 +128,15 @@ service	start the guide website and service
  version	Get the version of the application.
   -g, --gitref
 
-$ java -jar target/clj-actioncli-example-0.1.0-SNAPSHOT-standalone.jar version
+$ java -jar exampleapp-standalone.jar version
 0.0.1
-$ java -jar target/clj-actioncli-example-0.1.0-SNAPSHOT-standalone.jar version -g
+$ java -jar exampleapp-standalone.jar version -g
 0.0.1
 <some git ref>
-$ java -jar target/clj-actioncli-example-0.1.0-SNAPSHOT-standalone.jar service -p 1234
+$ java -jar exampleapp-standalone.jar service -p 1234
 Jul 08, 2016 6:09:08 PM clojure.tools.logging$eval1$fn__5 invoke
 INFO: starting service on port 1234
-$ java -jar target/clj-actioncli-example-0.1.0-SNAPSHOT-standalone.jar repl
+$ java -jar exampleapp-standalone.jar repl
 network-repl
 Clojure 1.8.0
 user=> (+ 1 1)
@@ -183,7 +182,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

@@ -29,7 +29,7 @@ $(DOC_DIR):
 	lein codox
 
 .PHONEY:
-pushdoc:	$(DOC_DIR)
+pushdocs:	$(DOC_DIR)
 	( cd $(DOC_DIR) ; \
 	  git add . ; \
 	  git commit -am "new doc push" ; \

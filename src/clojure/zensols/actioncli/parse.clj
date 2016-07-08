@@ -5,7 +5,7 @@
   (:use [clojure.tools.cli :refer [parse-opts summarize]]))
 
 (def ^:private help
-  ["-h" "--help" :flag true :default false])
+  ["-h" "--help" :default false])
 
 (def ^:private global-commands
   [help])
@@ -36,7 +36,23 @@
        (str/join \newline errors)))
 
 (defn process-arguments
-  "Process the command line, which contains the command and following "
+  "Process the command line, which contains the command (action) and arguments `args-raw`.
+
+  The command context is a map with actions.  Actions in turn contains what to
+  run when an action is given.
+
+  An example of a command context:
+
+```clojure
+(defn- create-command-context []
+  {:command-defs '((:service com.example service start-server-command)
+                   (:repl zensols.actioncli repl repl-command))
+   :single-commands {:version version-info-command}
+   :default-arguments [\"service\" \"-p\" \"8080\"]})
+```
+
+  See the [main document page](https://github.com/plandes/clj-actioncli) for
+  more info."
   [command-context & args-raw]
   (let [args (if (empty? args-raw)
                (:default-arguments command-context)

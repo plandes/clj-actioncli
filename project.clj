@@ -1,12 +1,16 @@
 (defproject com.zensols.tools/actioncli "0.0.1"
-  :description "General Clojure utilities (used in other shared projects)"
+  :description "An action oriented framework to the CLI (and various other libraries)."
   :url "https://github.com/plandes/clj-actionclj"
   :license {:name "Apache License version 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"
             :distribution :repo}
+  :pom-addition [:developers [:developer {:id "plandes"}
+                              [:name "Paul Landes"]
+                              [:url "https://github.com/plandes"]]]
   :plugins [[lein-codox "0.9.5"]]
   :codox {:metadata {:doc/format :markdown}
-          :output-path "doc/codox"}
+          :project {:name "Action CLI"}
+          :output-path "target/doc/codox"}
   :source-paths ["src/clojure"]
   :dependencies [[org.clojure/clojure "1.8.0"]
 

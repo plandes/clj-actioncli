@@ -1,7 +1,7 @@
 USER=		plandes
 PROJ=		clj-actioncli
 TARG=		target
-DOC_DIR=	doc
+DOC_DIR=	$(TARG)/doc
 POM=		pom.xml
 
 all:		package
@@ -13,9 +13,12 @@ package:	$(TARG)
 deploy:		clean
 	lein deploy clojars
 
+.PHONEY:
+docs:		$(DOC_DIR)
+
 # https://github.com/weavejester/codox/wiki/Deploying-to-GitHub-Pages
 $(DOC_DIR):
-	rm -rf $(DOC_DIR) && mkdir $(DOC_DIR)
+	rm -rf $(DOC_DIR) && mkdir -p $(DOC_DIR)
 	git clone https://github.com/$(USER)/$(PROJ).git $(DOC_DIR)
 	git update-ref -d refs/heads/gh-pages 
 	git push --mirror
@@ -40,6 +43,6 @@ $(TARG):
 	lein jar
 
 clean:
-	rm -fr dev-resources $(DOC_DIR) $(TARG) $(POM)*
+	rm -fr dev-resources $(TARG) $(POM)*
 	rmdir test 2>/dev/null || true
 	rmdir resources 2>/dev/null || true

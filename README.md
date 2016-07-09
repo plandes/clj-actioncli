@@ -148,7 +148,7 @@ Many apps (command line) need to find paths on the file system.  This library
 provides a way to both register and refine those locations with Java system
 properties.
 
-```clojure-repl
+```clojure
 user=> (:require '[zensols.actioncli.resource :as res])
 user=> (res/register-resource :data :system-file "data" :system-default "../data")
 #function[zensols.actioncli.resource/eval9492/fn--9493]

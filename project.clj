@@ -4,9 +4,6 @@
   :license {:name "Apache License version 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"
             :distribution :repo}
-  :pom-addition [:developers [:developer {:id "plandes"}
-                              [:name "Paul Landes"]
-                              [:url "https://github.com/plandes"]]]
   :plugins [[lein-codox "0.9.5"]]
   :codox {:metadata {:doc/format :markdown}
           :project {:name "Action CLI"}

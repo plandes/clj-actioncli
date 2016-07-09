@@ -16,7 +16,7 @@ Obtaining
 ---------
 For Clojure, in your `project.clj` file, add:
 
-[![Clojars Project](http://clojars.org/com.zensols.gui/clj-actioncli/latest-version.svg)](http://clojars.org/com.zensols.gui/clj-actioncli/)
+[![Clojars Project](http://clojars.org/com.zensols.tools/clj-actioncli/latest-version.svg)](http://clojars.org/com.zensols.tools/clj-actioncli/)
 
 For Java, in your `pom.xml` file, add:
 ```xml

@@ -9,11 +9,14 @@
 (def ^:private res-prop-fmt (atom "zensols.%s"))
 (def ^:private res-paths (atom {}))
 
+(defn- sysprop [name]
+  (System/getProperty (format @res-prop-fmt name)))
+
 (defn- syspath
   ([name]
    (syspath name name))
   ([name default]
-   (let [propstr (System/getProperty (format @res-prop-fmt name))]
+   (let [propstr (sysprop name)]
      (or propstr default))))
 
 (defn- sysfile
@@ -67,12 +70,15 @@
   * **:system-file** a file path of the resource--if the same name exists as a
   system property then that is used instead (see [[set-resource-property-format]])
   * **:system-default** the default path to use if the system-file isn't found
-  in the system properties"
-  [key & {:keys [function pre-path system-file
-                 system-default]}]
+  in the system properties
+  * **:system-property** get the resource directly from the system properties"
+  [key & {:keys [function pre-path
+                 system-file system-property system-default]}]
   (let [fnform (concat (list (or function 'io/file))
                        (if pre-path
                          (list `(resource-path ~pre-path)))
+                       (if system-property
+                         (list `(sysprop ~system-property)))
                        (if system-file
                          (list (remove nil? `(sysfile ~system-file
                                                       ~system-default)))))

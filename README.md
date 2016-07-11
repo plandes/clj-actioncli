@@ -14,25 +14,9 @@ resolution).
 
 Obtaining
 ---------
-For Clojure, in your `project.clj` file, add:
+In your `project.clj` file, add:
 
 [![Clojars Project](http://clojars.org/com.zensols.tools/actioncli/latest-version.svg)](http://clojars.org/com.zensols.tools/actioncli/)
-
-For Java, in your `pom.xml` file, add:
-```xml
-<repositories>
-    <repository>
-        <id>clojars</id>
-        <url>http://clojars.org/repo/</url>
-    </repository>
-</repositories>
-
-<dependency>
-    <groupId>com.zensols.tools</groupId>
-    <artifactId>actioncli</artifactId>
-    <version>0.0.1</version>
-</dependency>
-```
 
 Usage
 -----

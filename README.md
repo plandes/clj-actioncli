@@ -69,11 +69,11 @@ Create the following files: service.clj and core.clj
 
 ### src/com/example/core.clj
 ```clojure
-(ns taskmatch.service.core
+(ns com.example.service.core
   (:require [clojure.string :as str])
-  (:require [taskmatch.base.cli :as cli]
-            [taskmatch.base.log4j-util :as lu]
-            [taskmatch.base.db :as db])
+  (:require [com.example.base.cli :as cli]
+            [com.example.base.log4j-util :as lu]
+            [com.example.base.db :as db])
   (:require (base version))
   (:gen-class :main true))
 
@@ -85,8 +85,8 @@ Create the following files: service.clj and core.clj
           (if refp (println base.version/gitref)))})
 
 (def ^:private command-defs
-  '((:dbinfo taskmatch.base db db-info-command)
-    (:service taskmatch.service agent-handler start-server-command)))
+  '((:repl zensols.actioncli repl repl-command)
+    (:service com.example.service agent-handler start-server-command)))
 
 (defn- create-command-context []
   {:command-defs command-defs

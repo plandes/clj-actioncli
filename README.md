@@ -1,5 +1,5 @@
-An action oriented framework to the CLI (and various other libraries)
-=====================================================================
+Command line interface action oriented framework
+================================================
 
 This library parses *action based* command line arguments and invokes the
 corresponding code.  Action based means using the first token (after the binary

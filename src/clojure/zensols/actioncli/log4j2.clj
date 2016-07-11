@@ -9,7 +9,8 @@
 
 (defn change-log-level
   "Change the Log4j2 log level.
-  *level-thing* is the log level as either the Level instance or a string."
+
+  **level-thing** the log level as either the Level instance or a string."
   [level-thing]
   (log/debugf "changing log level to %s" level-thing)
   (let [ctx (LogManager/getContext false)
@@ -24,8 +25,24 @@
       (.setLevel logger level))
     (.updateLoggers ctx)))
 
-(defn configure [xml-resource]
+(defn configure
+  "Congigure the Log4j2 system with an XML resource."
+  [xml-resource]
   (let [resource (io/resource xml-resource)
         stream (.openStream resource)
         source (ConfigurationSource. stream) ]
     (Configurator/initialize nil source)))
+
+(defn log-level-set-option
+  ([]
+   (log-level-set-option "-l" "--level"))
+  ([short long]
+   [short long "Log level to set in the Log4J2 system."
+    :required "LOG LEVEL"
+    :default (org.apache.logging.log4j.Level/toLevel "info")
+    :parse-fn #(org.apache.logging.log4j.Level/toLevel % nil)
+    :validate [(fn [level]
+                 (when level
+                   (change-log-level level)
+                   true))
+               "Invalid level (error warn info debug trace)"]]))

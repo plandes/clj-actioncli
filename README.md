@@ -69,34 +69,29 @@ Create the following files: service.clj and core.clj
 
 ### src/com/example/core.clj
 ```clojure
-(ns com.example.service.core
-  (:require [clojure.string :as str])
-  (:require [com.example.base.cli :as cli]
-            [com.example.base.log4j-util :as lu]
-            [com.example.base.db :as db])
-  (:require (base version))
+(ns com.example.core
+  (:require [zensols.actioncli.parse :as parse]
+            [zensols.actioncli.log4j2 :as lu])
+  (:require (base))
   (:gen-class :main true))
 
 (def ^:private version-info-command
   {:description "Get the version of the application."
    :options [["-g" "--gitref"]]
    :app (fn [{refp :gitref} & args]
-          (println base.version/version)
-          (if refp (println base.version/gitref)))})
-
-(def ^:private command-defs
-  '((:repl zensols.actioncli repl repl-command)
-    (:service com.example.service agent-handler start-server-command)))
+          (println "0.0.1")
+          (if refp (println "<some git ref>")))})
 
 (defn- create-command-context []
-  {:command-defs command-defs
+  {:command-defs '((:service com.example service start-server-command)
+                   (:repl zensols.actioncli repl repl-command))
    :single-commands {:version version-info-command}
    :default-arguments ["service" "-p" "8080"]})
 
 (defn -main [& args]
   (lu/configure "service-log4j2.xml")
   (let [command-context (create-command-context)]
-    (apply cli/process-arguments command-context args)))
+    (apply parse/process-arguments command-context args)))
 ```
 
 ### resources/service-log4j.xml

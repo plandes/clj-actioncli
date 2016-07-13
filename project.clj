@@ -1,4 +1,4 @@
-(defproject com.zensols.tools/actioncli "0.0.3"
+(defproject com.zensols.tools/actioncli "0.0.4"
   :description "An action oriented framework to the CLI (and various other libraries)."
   :url "https://github.com/plandes/clj-actionclj"
   :license {:name "Apache License version 2.0"

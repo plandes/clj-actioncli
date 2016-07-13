@@ -85,5 +85,6 @@
         ;; bind since calling from other *ns* fails the eval (i.e. requires)
         fval (binding [*ns* our-ns]
                (eval (concat (list 'fn [] fnform))))]
+    (log/debugf "registering form: %s" (pr-str fnform))
     (swap! res-paths assoc key fval)
     fval))

@@ -151,7 +151,7 @@ Documentation
 -------------
 Additional [documentation](https://plandes.github.io/clj-actioncli/codox/index.html).
 
-Licencse
+License
 --------
 Copyright © 2016 Paul Landes
 

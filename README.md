@@ -128,7 +128,7 @@ provides a way to both register and refine those locations with Java system
 properties.
 
 ```clojure
-user=> (:require '[zensols.actioncli.resource :as res])
+user=> (require '[zensols.actioncli.resource :as res])
 user=> (res/register-resource :data :system-file "data" :system-default "../data")
 #function[zensols.actioncli.resource/eval9492/fn--9493]
 user=> (res/register-resource :runtime-gen :pre-path :data :system-file "db")

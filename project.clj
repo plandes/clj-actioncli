@@ -1,4 +1,4 @@
-(defproject com.zensols.tools/actioncli "0.0.5"
+(defproject com.zensols.tools/actioncli "0.0.6"
   :description "An action oriented framework to the CLI (and various other libraries)."
   :url "https://github.com/plandes/clj-actionclj"
   :license {:name "Apache License version 2.0"
@@ -19,5 +19,4 @@
 
                  ;; logging
                  [org.apache.logging.log4j/log4j-core "2.3"]
-                 [org.clojure/tools.logging "0.3.1"]]
-  :aot :all)
+                 [org.clojure/tools.logging "0.3.1"]])

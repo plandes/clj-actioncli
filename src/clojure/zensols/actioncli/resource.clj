@@ -36,9 +36,9 @@
 
   * **:create?** if `:file` then create the director(ies) on the
   file system, otherwise if `:dir` then create all parent directories"
-  ([key child-file & {:keys [create?] :or {:create? nil}}]
+  ([key child-file & {:keys [create] :or {:create nil}}]
    (let [path (io/file (resource-path key) child-file)]
-     (case create?
+     (case create
        :file (.mkdirs path)
        :dir (.mkdirs (.getParentFile path))
        :else)

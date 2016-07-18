@@ -18,6 +18,10 @@ In your `project.clj` file, add:
 
 [![Clojars Project](http://clojars.org/com.zensols.tools/actioncli/latest-version.svg)](http://clojars.org/com.zensols.tools/actioncli/)
 
+Documentation
+-------------
+Additional [documentation](https://plandes.github.io/clj-actioncli/codox/index.html).
+
 Usage
 -----
 This package supports:
@@ -146,10 +150,6 @@ user=> (.getPath (res/resource-path :data))
 user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
-
-Documentation
--------------
-Additional [documentation](https://plandes.github.io/clj-actioncli/codox/index.html).
 
 License
 --------

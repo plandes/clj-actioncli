@@ -22,7 +22,7 @@ See [[purge]]."
 (defn dyn-init-var
   "Create a variable binding if it isn't already defined.
 
-  You probably want to use [[def-noclob]] and [[def-atom]] over this.
+  You probably want to use [[defnc-]] and [[defa-]] over this.
 
 Usage:
 ```clojure
@@ -44,25 +44,47 @@ Usage:
        (let [new-var (intern *ns* var-sym)]
          (alter-var-root new-var (constantly init-val)))))))
 
-(defmacro def-noclob
-  "Create a variable binding out of **var** that doesn't already exist.  The
-  variable is initialized to **init-value**, otherwise it is bound to `nil`.
+(defmacro defnc
+  "Create a variable binding out of **sym** that doesn't already exist
+  (no clobbering).  The variable is initialized to **init-value**.
 
-  See [[def-atom]] and [[undef]]."
-  ([var]
-   `(dyn-init-var *ns* (quote ~var)))
-  ([var init-value]
-   `(dyn-init-var *ns* (quote ~var) (quote ~init-value))))
+  See [[defa]], [[defnc-]] and [[undef]]."
+  ([sym init-value]
+   `(let [msym# (quote ~sym)]
+      (dyn-init-var *ns* msym# (quote ~init-value)))))
 
-(defmacro def-atom
-  "Just like [[def-noclob]] but the initialization value is an atom created
+(defmacro defa
+  "Just like [[defnc]] but the initialization value is an atom created
   with **init-value** or `nil` if not given.
 
-  See [[def-noclob]] and [[undef]]."
-  ([var]
-   `(dyn-init-var *ns* (quote ~var) (atom nil)))
-  ([var init-value]
-   `(dyn-init-var *ns* (quote ~var) (atom (quote ~init-value)))))
+  See [[defnc]], [[defa-]] and [[undef]]."
+  ([sym]
+   `(let [msym# (quote ~sym)]
+      (dyn-init-var *ns* msym# (atom nil))))
+  ([sym init-value]
+   `(let [msym# (quote ~sym)]
+      (dyn-init-var *ns* msym# (atom (quote ~init-value))))))
+
+(defmacro defnc-
+  "Create a private variable binding out of **sym** that doesn't already exist
+  (no clobbering).  The variable is initialized to **init-value**.
+
+  See [[defa-]] and [[undef]]."
+  ([sym init-value]
+   `(let [msym# (with-meta (quote ~sym) {:private true})]
+      (dyn-init-var *ns* msym# (quote ~init-value)))))
+
+(defmacro defa-
+  "Just like [[defnc-]] but the initialization value is an atom created
+  with **init-value** or `nil` if not given.
+
+  See [[defnc-]] and [[undef]]."
+  ([sym]
+   `(let [msym# (with-meta (quote ~sym) {:private true})]
+      (dyn-init-var *ns* msym# (atom nil))))
+  ([sym init-value]
+   `(let [msym# (with-meta (quote ~sym) {:private true})]
+      (dyn-init-var *ns* msym# (atom (quote ~init-value))))))
 
 (defmacro undef
   "Unbind a variable in the current namespace.  Just like:

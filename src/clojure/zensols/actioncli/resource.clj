@@ -9,21 +9,25 @@
 (def ^:private res-prop-fmt (atom "zensols.%s"))
 (def ^:private res-paths (atom {}))
 
-(defn- sysprop [name]
-  (System/getProperty (format @res-prop-fmt name)))
+(defn- sysprop [name & {:keys [throw?] :or {throw? true}}]
+  (let [val (System/getProperty (format @res-prop-fmt name))]
+    (if (and (nil? val) throw?)
+      (throw (ex-info (format "System property '%s' is unset" name)
+                      {:name name})))
+    val))
 
-(defn- syspath
+(defn- sysdefault
   ([name]
-   (syspath name name))
+   (sysdefault name name))
   ([name default]
-   (let [propstr (sysprop name)]
+   (let [propstr (sysprop name :throw? false)]
      (or propstr default))))
 
 (defn- sysfile
   ([name]
    (sysfile name name))
   ([name default]
-   (let [path (syspath name default)]
+   (let [path (sysdefault name default)]
      (if (= (type path) java.io.File)
        path
        (io/file path)))))
@@ -55,6 +59,27 @@
   [fmt-str]
   (reset! res-prop-fmt fmt-str))
 
+(defn- resource-to-path
+  ([prepath path]
+   (let [prepath (cond (instance? java.io.File prepath) (.getPath prepath)
+                       (instance? java.net.URL prepath) (.getFile prepath)
+                       true prepath)]
+     (if path
+       (str prepath "/" path)
+       prepath))))
+
+(defn- resolve-resource
+  ([type prepath]
+   (resolve-resource type prepath nil))
+  ([type prepath path]
+   (case type
+     :file (if (instance? java.io.File prepath)
+             (io/file prepath path)
+             (if path
+               (io/file (resource-to-path prepath nil) path)
+               (io/file (resource-to-path prepath nil))))
+     :resource (io/resource (resource-to-path prepath path)))))
+
 (defn register-resource
   "Register a resource to be used with [[resource-path]].
   This should be done at the beginning of the program, usually from `core`.
@@ -72,13 +97,16 @@
   * **:system-default** the default path to use if the system-file isn't found
   in the system properties
   * **:system-property** get the resource directly from the system properties"
-  [key & {:keys [function pre-path
-                 system-file system-property system-default]}]
-  (let [fnform (concat (list (or function 'io/file))
+  [key & {:keys [function pre-path constant type
+                 system-file system-property system-default]
+          :or {type :file}}]
+  (let [fnform (concat (list (or function 'resolve-resource) type)
                        (if pre-path
                          (list `(resource-path ~pre-path)))
+                       (if constant
+                         (list constant))
                        (if system-property
-                         (list `(sysprop ~system-property)))
+                         (list `(sysdefault ~system-property)))
                        (if system-file
                          (list (remove nil? `(sysfile ~system-file
                                                       ~system-default)))))

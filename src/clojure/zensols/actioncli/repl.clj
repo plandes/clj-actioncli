@@ -4,7 +4,7 @@
   (:require [clojure.tools.nrepl.server :as replserv])
   (:require [clojure.tools.nrepl.cmdline :as replcmd]))
 
-(def ^:private default-port)
+(def ^:private default-port 12345)
 
 (defn run-server
   "Run REPL server."

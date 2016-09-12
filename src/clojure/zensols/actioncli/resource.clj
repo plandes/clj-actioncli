@@ -74,7 +74,9 @@
   ([type prepath path]
    (case type
      :file (if (instance? java.io.File prepath)
-             (io/file prepath path)
+             (if path
+               (io/file prepath path)
+               prepath)
              (if path
                (io/file (resource-to-path prepath nil) path)
                (io/file (resource-to-path prepath nil))))
@@ -91,6 +93,7 @@
   provided.
 
   * **:function** the function to call when the resource is generated
+  * **:type** the type of resource to return; one of `:resource` or `:file` (default)
   * **:pre-path** a key of a resource to prepend to the path
   * **:system-file** a file path of the resource--if the same name exists as a
   system property then that is used instead (see [[set-resource-property-format]])

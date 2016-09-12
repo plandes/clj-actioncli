@@ -1,7 +1,8 @@
 (ns ^{:doc "A file system/resource configuration package."
       :author "Paul Landes"}
     zensols.actioncli.resource
-  (:use [clojure.pprint :only (pprint)])
+  (:import [java.io File]
+           [java.net URL])
   (:require [clojure.tools.logging :as log]
             [clojure.java.io :as io]))
 
@@ -28,9 +29,44 @@
    (sysfile name name))
   ([name default]
    (let [path (sysdefault name default)]
-     (if (= (type path) java.io.File)
+     (if (= (type path) File)
        path
        (io/file path)))))
+
+(defn- resource-to-path
+  ([restype prepath path]
+   (log/debugf "resource to path: %s, %s (%s), %s"
+               restype prepath (type prepath) path)
+   (let [prepath-url? (instance? URL prepath)
+         prepath (cond (instance? File prepath) (.getPath prepath)
+                       prepath-url?
+                       (case restype
+                         :file (.getFile prepath)
+                         :resource (.toString prepath))
+                       true prepath)
+         catpath (if path
+                   (str prepath "/" path)
+                   prepath)]
+     (log/debugf "catpath: %s, restype: %s" catpath restype)
+     (case restype
+       :file catpath
+       :resource (if prepath-url?
+                   (URL. catpath)
+                   (io/resource catpath))))))
+
+(defn- resolve-resource
+  ([type prepath]
+   (resolve-resource type prepath nil))
+  ([type prepath path]
+   (case type
+     :file (if (instance? File prepath)
+             (if path
+               (io/file prepath path)
+               prepath)
+             (if path
+               (io/file (resource-to-path :file prepath nil) path)
+               (io/file (resource-to-path :file prepath nil))))
+     :resource (resource-to-path :resource prepath path))))
 
 (defn resource-path
   "Get a path to a resource.
@@ -41,7 +77,9 @@
   * **:create** if `:file` then create the director(ies) on the
   file system, otherwise if `:dir` then create all parent directories"
   ([key child-file & {:keys [create] :or {:create nil}}]
-   (let [path (io/file (resource-path key) child-file)]
+   (let [parent (resource-path key)
+         path (resolve-resource (if (instance? File parent) :file :resource)
+                                parent child-file)]
      (case create
        :file (.mkdirs path)
        :dir (.mkdirs (.getParentFile path))
@@ -58,29 +96,6 @@
   resource string lookups in the system properties."
   [fmt-str]
   (reset! res-prop-fmt fmt-str))
-
-(defn- resource-to-path
-  ([prepath path]
-   (let [prepath (cond (instance? java.io.File prepath) (.getPath prepath)
-                       (instance? java.net.URL prepath) (.getFile prepath)
-                       true prepath)]
-     (if path
-       (str prepath "/" path)
-       prepath))))
-
-(defn- resolve-resource
-  ([type prepath]
-   (resolve-resource type prepath nil))
-  ([type prepath path]
-   (case type
-     :file (if (instance? java.io.File prepath)
-             (if path
-               (io/file prepath path)
-               prepath)
-             (if path
-               (io/file (resource-to-path prepath nil) path)
-               (io/file (resource-to-path prepath nil))))
-     :resource (io/resource (resource-to-path prepath path)))))
 
 (defn register-resource
   "Register a resource to be used with [[resource-path]].

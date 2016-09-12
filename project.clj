@@ -15,8 +15,9 @@
                  [org.clojure/tools.cli "0.3.5"]
 
                  ;; repl
-                 [org.clojure/tools.nrepl "0.2.11"]
+                 [org.clojure/tools.nrepl "0.2.12"]
 
                  ;; logging
                  [org.apache.logging.log4j/log4j-core "2.3"]
-                 [org.clojure/tools.logging "0.3.1"]])
+                 [org.clojure/tools.logging "0.3.1"]]
+  :profiles {:dev {:dependencies [[com.zensols/clj-append "1.0.4"]]}})

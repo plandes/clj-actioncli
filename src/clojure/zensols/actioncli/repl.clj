@@ -23,6 +23,7 @@
    :options
    [["-h" "--headless" "start an nREPL server"]
     ["-p" "--port" "the port bind for the repl server"
+     :required "NUMBER"
      :default default-port
      :parse-fn #(Integer/parseInt %)
      :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]]

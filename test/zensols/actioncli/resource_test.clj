@@ -4,6 +4,10 @@
             [clojure.string :as s])
   (:require [zensols.actioncli.resource :refer :all]))
 
+(register-resource :data :system-file "data" :system-default "../data")
+(register-resource :runtime-gen :pre-path :data :system-file "db")
+(register-resource :root-pkg :constant "clojure" :type :resource)
+
 (deftest test-register
   (testing "register"
     (is (function? (register-resource :data :system-file "data" :system-default "../data")))

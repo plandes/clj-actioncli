@@ -51,7 +51,7 @@ Usage:
   See [[defa]], [[defnc-]] and [[undef]]."
   ([sym init-value]
    `(let [msym# (quote ~sym)]
-      (dyn-init-var *ns* msym# (quote ~init-value)))))
+      (dyn-init-var *ns* msym# ~init-value))))
 
 (defmacro defa
   "Just like [[defnc]] but the initialization value is an atom created
@@ -63,7 +63,7 @@ Usage:
       (dyn-init-var *ns* msym# (atom nil))))
   ([sym init-value]
    `(let [msym# (quote ~sym)]
-      (dyn-init-var *ns* msym# (atom (quote ~init-value))))))
+      (dyn-init-var *ns* msym# (atom ~init-value)))))
 
 (defmacro defnc-
   "Create a private variable binding out of **sym** that doesn't already exist
@@ -72,7 +72,7 @@ Usage:
   See [[defa-]] and [[undef]]."
   ([sym init-value]
    `(let [msym# (with-meta (quote ~sym) {:private true})]
-      (dyn-init-var *ns* msym# (quote ~init-value)))))
+      (dyn-init-var *ns* msym# ~init-value))))
 
 (defmacro defa-
   "Just like [[defnc-]] but the initialization value is an atom created
@@ -84,7 +84,7 @@ Usage:
       (dyn-init-var *ns* msym# (atom nil))))
   ([sym init-value]
    `(let [msym# (with-meta (quote ~sym) {:private true})]
-      (dyn-init-var *ns* msym# (atom (quote ~init-value))))))
+      (dyn-init-var *ns* msym# (atom ~init-value)))))
 
 (defmacro undef
   "Unbind a variable in the current namespace.  Just like:

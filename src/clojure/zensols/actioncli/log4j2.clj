@@ -21,6 +21,7 @@
         level (if (string? level-thing)
                 (Level/toLevel level-thing)
                 level-thing)]
+    (.setLevel log-config level)
     (doseq [logger loggers]
       (.setLevel logger level))
     (.updateLoggers ctx)))

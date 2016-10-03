@@ -151,6 +151,17 @@ user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
 
+Building
+--------
+All [leiningen](http://leiningen.org) tasks will work in this project.  For
+additional build functionality (git tag convenience utility functionality)
+clone the [Clojure build repo](https://github.com/plandes/clj-zenbuild) in the
+same (parent of this file) directory as this project:
+```bash
+   cd ..
+   git clone https://github.com/plandes/clj-zenbuild
+```
+
 License
 --------
 Copyright © 2016 Paul Landes

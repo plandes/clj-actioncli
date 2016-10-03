@@ -11,7 +11,7 @@
           :output-path "target/doc/codox"}
   :source-paths ["src/clojure"]
   :dependencies [[org.clojure/clojure "1.8.0"]
-
+                 
                  ;; command line
                  [org.clojure/tools.cli "0.3.5"]
 
@@ -21,9 +21,7 @@
                  ;; logging
                  [org.apache.logging.log4j/log4j-core "2.3"]
                  [org.clojure/tools.logging "0.3.1"]]
-  :profiles {:uberjar {:aot :all}
-             :provided {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :dev
+  :profiles {:dev
              {:jvm-opts
               ["-Dlog4j.configurationFile=test-resources/log4j2.xml" "-Xms4g" "-Xmx12g" "-XX:+UseConcMarkSweepGC"]
               :dependencies [[com.zensols/clj-append "1.0.4"]]}})

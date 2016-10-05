@@ -21,7 +21,8 @@
                  ;; logging
                  [org.apache.logging.log4j/log4j-core "2.3"]
                  [org.clojure/tools.logging "0.3.1"]]
-  :profiles {:dev
+  :profiles {:appassem {:aot :all}
+             :dev
              {:jvm-opts
               ["-Dlog4j.configurationFile=test-resources/log4j2.xml" "-Xms4g" "-Xmx12g" "-XX:+UseConcMarkSweepGC"]
               :dependencies [[com.zensols/clj-append "1.0.4"]]}})

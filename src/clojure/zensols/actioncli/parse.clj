@@ -4,6 +4,10 @@
   (:require [clojure.string :as str])
   (:use [clojure.tools.cli :refer [parse-opts summarize]]))
 
+(def ^:dynamic *dump-jvm-on-error*
+  "Bind this from the REPL to avoid a system exit when testing the CLI."
+  true)
+
 (def ^:private help
   ["-h" "--help" :default false])
 
@@ -30,6 +34,21 @@
   (str (name command) "\t"
        (:description (command commands)) "\n"
        (:summary (parse-opts nil (:options (command commands)))) "\n\n"))
+
+(defn handle-exception
+  "Handle exceptions thrown from CLI commands."
+  [e]
+  (if (instance? java.io.FileNotFoundException e)
+    (binding [*out* *err*]
+      (println (format "io error: %s" (.getMessage e))))
+    (binding [*out* *err*]
+      (println (format "error: %s"
+                       (if ex-data
+                         (.getMessage e)
+                         (.toString e))))))
+  (if *dump-jvm-on-error*
+    (System/exit 1)
+    (throw e)))
 
 (defn- error-msg [errors]
   (str "The following errors occurred while parsing your command:\n\n"

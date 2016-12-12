@@ -7,6 +7,7 @@
   (:import (org.apache.logging.log4j LogManager Level)
            (com.zensols.log LogUtil)))
 
+;; add the Log4J2 factory
 (alter-var-root #'log/*logger-factory*
                 (constantly (fac/log4j2-factory)))
 

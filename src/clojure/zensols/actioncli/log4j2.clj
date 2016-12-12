@@ -8,8 +8,10 @@
            (com.zensols.log LogUtil)))
 
 ;; add the Log4J2 factory
-(alter-var-root #'log/*logger-factory*
-                (constantly (fac/log4j2-factory)))
+(try
+  (alter-var-root #'log/*logger-factory*
+                  (constantly (fac/log4j2-factory)))
+  (catch Exception e))
 
 (defn change-log-level
   "Change the Log4j2 log level.

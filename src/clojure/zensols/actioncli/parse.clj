@@ -60,7 +60,21 @@
     (System/exit 1)
     (throw e)))
 
-(defn error-msg [errors]
+(defmacro with-exception
+  "Wrap a CLI forms in a `try` and call [[handle-exception]] if an exception
+  occurs."
+  {:style/indent 0}
+  [& forms]
+  (let [ex (gensym)]
+   `(try
+      ~@forms
+      (catch Exception ~ex
+        (handle-exception ~ex)))))
+
+(defn error-msg
+  "Print every element of the sequence **errors**.  If there **errors** is a
+  singleton then only print one in the common usage format."
+  [errors]
   (if (= (count errors) 1)
     (format "%s: %s" (program-name) (first errors))
     (str "The following errors occurred while parsing your command:\n\n"

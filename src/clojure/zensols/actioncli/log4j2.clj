@@ -26,7 +26,7 @@
   [xml-resource]
   (let [resource (io/resource xml-resource)
         stream (.openStream resource)]
-    (with-open [in (io/input-stream (io/file "test-resources/log4j2.xml"))]
+    (with-open [in (io/input-stream (io/file xml-resource))]
       (LogUtil/config in))))
 
 (defn log-level-set-option

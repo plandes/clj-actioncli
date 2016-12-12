@@ -1,18 +1,27 @@
 (ns ^{:doc "Parse action based command line arguments."
       :author "Paul Landes"}
     zensols.actioncli.parse
-  (:require [clojure.string :as str])
-  (:use [clojure.tools.cli :refer [parse-opts summarize]]))
+  (:require [clojure.string :as str]
+            [clojure.tools.cli :refer [parse-opts summarize]])
+  (:require [zensols.actioncli.dynamic :refer (defa-)]))
 
 (def ^:dynamic *dump-jvm-on-error*
   "Bind this from the REPL to avoid a system exit when testing the CLI."
   true)
+
+(defa- program-name-inst "prog")
 
 (def ^:private help
   ["-h" "--help" :default false])
 
 (def ^:private global-commands
   [help])
+
+(defn program-name []
+  @program-name-inst)
+
+(defn set-program-name [program-name]
+  (reset! program-name-inst program-name))
 
 (defn- create-commands [command-context]
   (merge
@@ -40,9 +49,10 @@
   [e]
   (if (instance? java.io.FileNotFoundException e)
     (binding [*out* *err*]
-      (println (format "io error: %s" (.getMessage e))))
+      (println (format "%s: io error: %s" (program-name) (.getMessage e))))
     (binding [*out* *err*]
-      (println (format "error: %s"
+      (println (format "%s: error: %s"
+                       (program-name)
                        (if ex-data
                          (.getMessage e)
                          (.toString e))))))
@@ -50,9 +60,11 @@
     (System/exit 1)
     (throw e)))
 
-(defn- error-msg [errors]
-  (str "The following errors occurred while parsing your command:\n\n"
-       (str/join \newline errors)))
+(defn error-msg [errors]
+  (if (= (count errors) 1)
+    (format "%s: %s" (program-name) (first errors))
+    (str "The following errors occurred while parsing your command:\n\n"
+         (str/join \newline errors))))
 
 (defn process-arguments
   "Process the command line, which contains the command (action) and arguments `args-raw`.

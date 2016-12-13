@@ -24,8 +24,7 @@
                  ;; logging
                  [org.clojure/tools.logging "0.3.1"]]
   :profiles {:provided {:dependencies
-                        [[org.apache.logging.log4j/log4j-api "2.7"]
-                         [org.apache.logging.log4j/log4j-core "2.7"]]}
+                        [[org.apache.logging.log4j/log4j-core "2.7"]]}
              :appassem {:aot :all}
              :dev
              {:jvm-opts ["-Xms4g" "-Xmx12g" "-XX:+UseConcMarkSweepGC"]

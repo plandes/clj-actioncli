@@ -27,13 +27,13 @@
 (defn configure
   "Congigure the Log4j2 system with an XML resource."
   [xml-resource]
-  (log/debugf "configuring with XML resource: %s" xml-resource)
   (let [res (io/resource xml-resource)]
     (if (nil? res)
       (throw (ex-info (format "No such resource: %s" xml-resource)
                       {:xml-resource xml-resource})))
     (with-open [in (io/input-stream res)]
-      (LogUtil/config in))))
+      (LogUtil/config in))
+    (log/debugf "configured with XML resource: %s" xml-resource)))
 
 (defn log-level-set-option
   ([]

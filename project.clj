@@ -13,7 +13,6 @@
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
   :jar-exclusions [#".gitignore"]
-  :exclusions [log4j/log4j]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  
                  ;; command line

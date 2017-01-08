@@ -2,6 +2,7 @@
       :author "Paul Landes"}
     zensols.actioncli.parse
   (:require [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [clojure.tools.cli :refer [parse-opts summarize]])
   (:require [zensols.actioncli.dynamic :refer (defa-)]))
 
@@ -47,15 +48,17 @@
 (defn handle-exception
   "Handle exceptions thrown from CLI commands."
   [e]
-  (if (instance? java.io.FileNotFoundException e)
-    (binding [*out* *err*]
-      (println (format "%s: io error: %s" (program-name) (.getMessage e))))
-    (binding [*out* *err*]
-      (println (format "%s: error: %s"
-                       (program-name)
-                       (if ex-data
-                         (.getMessage e)
-                         (.toString e))))))
+  (let [msg (.getMessage e)]
+    (log/error e "command line parse error")
+    (if (instance? java.io.FileNotFoundException e)
+      (binding [*out* *err*]
+        (println (format "%s: io error: %s" (program-name) msg)))
+      (binding [*out* *err*]
+        (println (format "%s: error: %s"
+                         (program-name)
+                         (if ex-data
+                           (.getMessage e)
+                           (.toString e)))))))
   (if *dump-jvm-on-error*
     (System/exit 1)
     (throw e)))

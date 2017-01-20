@@ -10,24 +10,31 @@
   "Run REPL server."
   ([]
    (run-server default-port))
-  ([opts]
-   (let [port (:port opts)
-         fmt "nREPL server started on port %d on host 127.0.0.1 - nrepl://127.0.0.1:%d"]
+  ([port]
+   (let [fmt "nREPL server started on port %d on host 127.0.0.1 - nrepl://127.0.0.1:%d"]
      (replserv/start-server :port port)
      ;; reproduce the leinnigen repl server message so emacs can find the port
      (println (format fmt port port)))))
+
+(defn repl-port-set-option
+  ([]
+   (repl-port-set-option "-p" "--p"))
+  ([short long]
+   (repl-port-set-option short long default-port))
+  ([short long port]
+   [short long "the port bind for the repl server"
+     :required "NUMBER"
+     :default default-port
+     :parse-fn #(Integer/parseInt %)
+     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]))
 
 (def repl-command
   "A CLI command used with the [[zensols.actioncli.parse]] package."
   {:description "start a repl either on the command line or headless with -h"
    :options
    [["-h" "--headless" "start an nREPL server"]
-    ["-p" "--port" "the port bind for the repl server"
-     :required "NUMBER"
-     :default default-port
-     :parse-fn #(Integer/parseInt %)
-     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]]
-   :app (fn [opts & args]
-          (if (:headless opts)
-            (run-server opts)
+    repl-port-set-option]
+   :app (fn [{:keys [port headless]} & args]
+          (if headless
+            (run-server port)
             (replcmd/-main "--interactive")))})

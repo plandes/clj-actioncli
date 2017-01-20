@@ -40,7 +40,8 @@ Create the following files: service.clj and core.clj
 ### src/com/example/service.clj
 ```clojure
 (ns com.example.service
-  (:require [clojure.tools.logging :as log]))
+  (:require [clojure.tools.logging :as log])
+  (:require [zensols.actioncli.parse :refer (with-exception)]))
 
 (defn run-server [port]
   (log/infof "starting service on port %d" port))
@@ -52,7 +53,8 @@ Create the following files: service.clj and core.clj
               :parse-fn #(Integer/parseInt %)
               :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]]
    :app (fn [opts & args]
-          (run-server (:port opts)))})
+          (with-exception
+            (run-server (:port opts))))})
 ```
 
 ### src/com/example/core.clj

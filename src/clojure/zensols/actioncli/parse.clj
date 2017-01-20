@@ -135,4 +135,6 @@
           (do
             (println (error-msg errors))
             (println (command-help command-key commands)))
-          ((get (get commands command-key) :app) command-opts command-args))))))
+          ((get (get commands command-key) :app)
+           command-opts
+           (rest command-args)))))))

@@ -26,10 +26,10 @@
 (defn- create-commands [command-context]
   (->> (:command-defs command-context)
        (map (fn [[key pkg-parent pkg-child command-def]]
-                  (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
-                    (eval req)
-                    {key (symbol (format "%s.%s/%s" pkg-parent
-                                         pkg-child command-def))})))
+              (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
+                (eval req)
+                {key (symbol (format "%s.%s/%s" pkg-parent
+                                     pkg-child command-def))})))
        (apply merge)
        eval
        (merge (:single-commands command-context))
@@ -63,10 +63,10 @@
   {:style/indent 0}
   [& forms]
   (let [ex (gensym)]
-   `(try
-      ~@forms
-      (catch Exception ~ex
-        (handle-exception ~ex)))))
+    `(try
+       ~@forms
+       (catch Exception ~ex
+         (handle-exception ~ex)))))
 
 (defn error-msg
   "Print every element of the sequence **errors**.  If there **errors** is a

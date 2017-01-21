@@ -26,7 +26,7 @@
      :required "NUMBER"
      :default default-port
      :parse-fn #(Integer/parseInt %)
-     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]))
+    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]))
 
 (def repl-command
   "A CLI command used with the [[zensols.actioncli.parse]] package."

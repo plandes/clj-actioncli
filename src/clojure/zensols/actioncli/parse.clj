@@ -136,7 +136,7 @@
         (if errors
           (do
             (println (error-msg errors))
-            (println (command-help command-key commands)))
+            (println (command-help command 0)))
           ((get (get commands command-key) :app)
            command-opts
            (rest command-args)))))))

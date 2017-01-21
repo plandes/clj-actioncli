@@ -83,7 +83,8 @@
   ([{:keys [name description options] :as command} max-len]
    (str (format (str "%-" (+ 4 max-len) "s") name)
         description \newline
-        (:summary (parse-opts nil options)) \newline)))
+        (:summary (parse-opts nil options))
+        (if-not (empty? options) \newline))))
 
 (defn- help-msg [command-context commands command-key]
   (let [{:keys [print-help-fn]} command-context

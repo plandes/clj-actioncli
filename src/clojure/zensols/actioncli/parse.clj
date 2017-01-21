@@ -77,10 +77,13 @@
     (str "The following errors occurred while parsing your command:\n\n"
          (s/join \newline errors))))
 
-(defn- command-help [{:keys [name description options] :as command} max-len]
-  (str (format (str "%-" (+ 4 max-len) "s") name)
-       description \newline
-       (:summary (parse-opts nil options)) \newline))
+(defn- command-help
+  ([{:keys [name] :as command}]
+   (command-help command (count name)))
+  ([{:keys [name description options] :as command} max-len]
+   (str (format (str "%-" (+ 4 max-len) "s") name)
+        description \newline
+        (:summary (parse-opts nil options)) \newline)))
 
 (defn- help-msg [command-context commands command-key]
   (let [{:keys [print-help-fn]} command-context
@@ -136,7 +139,7 @@
         (if errors
           (do
             (println (error-msg errors))
-            (println (command-help command 0)))
+            (println (command-help command)))
           ((get (get commands command-key) :app)
            command-opts
            (rest command-args)))))))

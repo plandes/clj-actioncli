@@ -23,7 +23,7 @@
    (repl-port-set-option short long default-port))
   ([short long port]
    [short long "the port bind for the repl server"
-     :required "NUMBER"
+     :required "<number>"
      :default default-port
      :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]))

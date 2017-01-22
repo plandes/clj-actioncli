@@ -18,7 +18,7 @@
 
 (defn repl-port-set-option
   ([]
-   (repl-port-set-option "-p" "--p"))
+   (repl-port-set-option "-p" "--port"))
   ([short long]
    (repl-port-set-option short long default-port))
   ([short long port]

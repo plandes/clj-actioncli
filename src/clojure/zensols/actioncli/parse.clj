@@ -2,6 +2,7 @@
       :author "Paul Landes"}
     zensols.actioncli.parse
   (:require [clojure.string :as s]
+            [clojure.tools.logging :as log]
             [clojure.tools.cli :refer [parse-opts summarize]])
   (:require [zensols.actioncli.dynamic :refer (defa-)]))
 

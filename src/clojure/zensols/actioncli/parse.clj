@@ -10,6 +10,10 @@
   "Bind this from the REPL to avoid a system exit when testing the CLI."
   true)
 
+(def ^:dynamic *log-error*
+  "Log exceptions in [[handle-exception]]."
+  false)
+
 (defa- program-name-inst "prog")
 
 (def ^:private help
@@ -46,7 +50,7 @@
   "Handle exceptions thrown from CLI commands."
   [e]
   (let [msg (.getMessage e)]
-    (log/error e "command line parse error")
+    (if *log-error* (log/error e "command line parse error"))
     (if (instance? java.io.FileNotFoundException e)
       (binding [*out* *err*]
         (println (format "%s: io error: %s" (program-name) msg)))

@@ -4,10 +4,6 @@
             [clojure.string :as s])
   (:require [zensols.actioncli.resource :refer :all]))
 
-(register-resource :data :system-file "data" :system-default "../data")
-(register-resource :runtime-gen :pre-path :data :system-file "db")
-(register-resource :root-pkg :constant "clojure" :type :resource)
-
 (deftest test-register
   (testing "register"
     (is (function? (register-resource :data :system-file "data" :system-default "../data")))
@@ -25,6 +21,9 @@
     (is (= "/new-data-path/db" (.getPath (resource-path :runtime-gen))))))
 
 (deftest test-java-resource
+  (register-resource :data :system-file "data" :system-default "../data")
+  (register-resource :runtime-gen :pre-path :data :system-file "db")
+  (register-resource :root-pkg :constant "clojure" :type :resource)
   (is (not (nil? (resource-path :root-pkg))))
   (is (s/starts-with? (.toString (resource-path :root-pkg)) "jar:file:"))
   (is (s/ends-with? (.toString (resource-path :root-pkg))

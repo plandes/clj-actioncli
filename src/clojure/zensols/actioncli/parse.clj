@@ -22,29 +22,29 @@
 (defn set-program-name [program-name]
   (reset! program-name-inst program-name))
 
-(defn- create-commands [command-context]
-  (->> (:command-defs command-context)
-       (map (fn [[key pkg-parent pkg-child command-def]]
+(defn- create-actions [action-context]
+  (->> (:action-defs action-context)
+       (map (fn [[key pkg-parent pkg-child action-def]]
               (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
                 (eval req)
                 {key (symbol (format "%s.%s/%s" pkg-parent
-                                     pkg-child command-def))})))
+                                     pkg-child action-def))})))
        (apply merge)
        eval
-       (merge (:single-commands command-context))
+       (merge (:single-actions action-context))
        (map (fn [[k v]]
               {k (assoc v :name (name k))}))
        (apply merge)))
 
-(defn- execute-command [key opts args]
-  (let [command (:app (get (create-commands) key))]
-    (apply command opts args)))
+(defn- execute-action [key opts args]
+  (let [action (:app (get (create-actions) key))]
+    (apply action opts args)))
 
 (defn handle-exception
-  "Handle exceptions thrown from CLI commands."
+  "Handle exceptions thrown from CLI actions."
   [e]
   (let [msg (.getMessage e)]
-    (if *log-error* (log/error e "command line parse error"))
+    (if *log-error* (log/error e "action line parse error"))
     (if (instance? java.io.FileNotFoundException e)
       (binding [*out* *err*]
         (println (format "%s: io error: %s" (program-name) msg)))
@@ -75,107 +75,107 @@
   [errors]
   (if (= (count errors) 1)
     (format "%s: %s" (program-name) (first errors))
-    (str "The following errors occurred while parsing your command:\n\n"
+    (str "The following errors occurred while parsing your action:\n\n"
          (s/join \newline errors))))
 
-(defn- command-help
-  ([{:keys [name] :as command} skip-action-name?]
-   (command-help command skip-action-name? (count name)))
-  ([{:keys [name description options] :as command} skip-action-name? max-len]
+(defn- action-help
+  ([{:keys [name] :as action} skip-action-name?]
+   (action-help action skip-action-name? (count name)))
+  ([{:keys [name description options] :as action} skip-action-name? max-len]
    (str (if-not skip-action-name?
           (format (str "%-" (+ 4 max-len) "s") name))
         description \newline
         (:summary (cli/parse-opts nil options))
         (if-not (empty? options) \newline))))
 
-(defn- command-keys [command-context]
-  (or (:command-print-order command-context)
-      (concat (map first (:command-defs command-context))
-              (keys (:single-commands command-context)))))
+(defn- action-keys [action-context]
+  (or (:action-print-order action-context)
+      (concat (map first (:action-defs action-context))
+              (keys (:single-actions action-context)))))
 
 (defn- help-msg
-  ([command-context commands]
-   (help-msg command-context commands nil))
-  ([command-context commands command-key]
-   (let [{:keys [print-help-fn action-mode]} command-context
-         command-keys (command-keys command-context)
-         name-len (->> (vals commands)
+  ([action-context actions]
+   (help-msg action-context actions nil))
+  ([action-context actions action-key]
+   (let [{:keys [print-help-fn action-mode]} action-context
+         action-keys (action-keys action-context)
+         name-len (->> (vals actions)
                        (map #(-> % :name name count))
                        (apply max))
-         command (get commands command-key)]
-     (->> (if command
-            (command-help command)
-            (->> (map #(get commands %) command-keys)
-                 (map #(command-help % (= 'single action-mode) name-len))
+         action (get actions action-key)]
+     (->> (if action
+            (action-help action)
+            (->> (map #(get actions %) action-keys)
+                 (map #(action-help % (= 'single action-mode) name-len))
                  (s/join \newline)))
           ((or print-help-fn identity))))))
 
-(defn- parse-single [command-context command arguments single-action-mode?
+(defn- parse-single [action-context action arguments single-action-mode?
                      & {:keys [print-errors?]
                         :or {print-errors? true}}]
-  (let [{app :app option-defs :options} command
+  (let [{app :app option-defs :options} action
         {:keys [options arguments errors summary]}
         (cli/parse-opts arguments option-defs :strict true)]
     (if errors
       (do
         (if print-errors?
-          (->> [(error-msg errors) (command-help command single-action-mode?)]
+          (->> [(error-msg errors) (action-help action single-action-mode?)]
                (map println)
                doall))
         {:errors errors})
       (app options arguments))))
 
-(defn- parse-multi [command-context commands arguments]
-  (let [command-keys (command-keys command-context)
-        command-key (keyword (first arguments))
-        command (get commands command-key)]
-    (if (nil? command)
-      (println (help-msg command-context commands command-key))
-      (parse-single command-context command (rest arguments) false))))
+(defn- parse-multi [action-context actions arguments]
+  (let [action-keys (action-keys action-context)
+        action-key (keyword (first arguments))
+        action (get actions action-key)]
+    (if (nil? action)
+      (println (help-msg action-context actions action-key))
+      (parse-single action-context action (rest arguments) false))))
 
-(defn- parse-global [command-context commands arguments]
-  (let [{:keys [global-actions]} command-context]
+(defn- parse-global [action-context actions arguments]
+  (let [{:keys [global-actions]} action-context]
    (->> global-actions
         (map (fn [action]
-               (let [res (parse-single command-context action arguments true
+               (let [res (parse-single action-context action arguments true
                                        :print-errors? false)]
                  (cond (:global-help res)
                        (do
-                         (println (help-msg command-context commands))
+                         (println (help-msg action-context actions))
                          res)
                        (:global-noop res) res))))
         doall)))
 
 (defn process-arguments
-  "Process the command line, which contains the command (action) and arguments
+  "Process the action line, which contains the action (action) and arguments
   `args`.
 
-  The command context is a map with actions.  Actions in turn contains what to
+  The action context is a map with actions.  Actions in turn contains what to
   run when an action is given.
 
-  An example of a command context:
+  An example of a action context:
 
 ```clojure
-(defn- create-command-context []
-  {:command-defs '((:service com.example service start-server-command)
-                   (:repl zensols.actioncli repl repl-command))
-   :single-commands {:version version-info-command}
+(defn- create-action-context []
+  {:action-defs '((:service com.example service start-server-action)
+                   (:repl zensols.actioncli repl repl-action))
+   :single-actions {:version version-info-action}
    :default-arguments [\"service\" \"-p\" \"8080\"]})
 ```
 
   See the [main document page](https://github.com/plandes/clj-actioncli) for
   more info."
-  [command-context & args]
+  [action-context & args]
   (let [arguments (if (empty? args)
-                    (:default-arguments command-context)
+                    (:default-arguments action-context)
                     args)
-        {:keys [action-mode]} command-context
+        {:keys [action-mode]} action-context
         single-action-mode? (= action-mode 'single)
-        commands (create-commands command-context)
-        global-parsed (->> (parse-global command-context commands arguments)
+        actions (create-actions action-context)
+        global-parsed (->> (parse-global action-context actions arguments)
                            (remove nil?))]
     (if-not (empty? global-parsed)
       global-parsed
       (if single-action-mode?
-        (parse-single command-context (-> commands vals first) arguments true)
-        (parse-multi command-context commands arguments)))))
+        (parse-single action-context (-> actions vals first) arguments true)
+        (parse-multi action-context actions arguments)))))

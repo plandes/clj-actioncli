@@ -4,8 +4,8 @@
             [clojure.string :as s])
   (:require [zensols.actioncli.parse :refer :all]))
 
-(def ^:private test-command
-  {:description "test command"
+(def ^:private test-action
+  {:description "test action"
    :options
    [["-h" "--headless" "start an nREPL server"]
     ["-p" "--port" "database port"
@@ -30,17 +30,17 @@
             (println "version: v1")
             {:global-noop true}))})
 
-(defn- create-command-single-context []
-  {:single-commands {:tst test-command}
+(defn- create-action-single-context []
+  {:single-actions {:tst test-action}
    :global-actions [help-option version-option]
    :action-mode 'single})
 
 (defn- main-single-action-cli [& args]
-  (let [command-context (create-command-single-context)]
-    (apply process-arguments command-context args)))
+  (let [action-context (create-action-single-context)]
+    (apply process-arguments action-context args)))
 
 (deftest test-parse-single
-  (testing "parse single command"
+  (testing "parse single action"
     (is (= '({:global-help true})
            (main-single-action-cli "-h")))
     (is (= '({:global-noop true})
@@ -56,20 +56,20 @@
     (is (= ["testcmd" {:port 123 :headless true} '(("arg1"))]
            (main-single-action-cli "-h" "-p" "123" "arg1")))))
 
-(def ^:private test2-command
-  {:description "test2 command"
+(def ^:private test2-action
+  {:description "test2 action"
    :options []
    :app (fn [opts & args]
           ["testcmd 2" opts args])})
 
-(defn- create-command-multi-context []
-  {:single-commands {:tst test-command
-                     :tst2 test2-command}
+(defn- create-action-multi-context []
+  {:single-actions {:tst test-action
+                     :tst2 test2-action}
    :global-actions [help-option version-option]})
 
 (defn- main-multi-action-cli [& args]
-  (let [command-context (create-command-multi-context)]
-    (apply process-arguments command-context args)))
+  (let [action-context (create-action-multi-context)]
+    (apply process-arguments action-context args)))
 
 (deftest test-parse
   (testing "parse"

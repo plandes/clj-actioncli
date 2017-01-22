@@ -128,9 +128,10 @@
                        (if system-file
                          (list (remove nil? `(sysfile ~system-file
                                                       ~system-default)))))
-        _ (log/debugf "registering form: %s" (pr-str fnform))
+        _ (log/debugf "registering form: %s -> %s" key (pr-str fnform))
         ;; bind since calling from other *ns* fails the eval (i.e. requires)
         fval (binding [*ns* our-ns]
                (eval (concat (list 'fn [] fnform))))]
     (swap! res-paths assoc key fval)
+    (log/tracef "resource-path: %s -> %s" key (resource-path key))
     fval))

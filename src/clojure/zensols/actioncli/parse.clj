@@ -1,8 +1,7 @@
 (ns ^{:doc "Parse action based command line arguments."
       :author "Paul Landes"}
     zensols.actioncli.parse
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
+  (:require [clojure.string :as s]
             [clojure.tools.cli :refer [parse-opts summarize]])
   (:require [zensols.actioncli.dynamic :refer (defa-)]))
 
@@ -25,25 +24,22 @@
   (reset! program-name-inst program-name))
 
 (defn- create-commands [command-context]
-  (merge
-   (eval
-    (apply merge
-           (map (fn [[key pkg-parent pkg-child command-def]]
-                  (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
-                    (eval req)
-                    {key (symbol (format "%s.%s/%s" pkg-parent
-                                         pkg-child command-def))}))
-                (:command-defs command-context))))
-   (:single-commands command-context)))
+  (->> (:command-defs command-context)
+       (map (fn [[key pkg-parent pkg-child command-def]]
+              (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
+                (eval req)
+                {key (symbol (format "%s.%s/%s" pkg-parent
+                                     pkg-child command-def))})))
+       (apply merge)
+       eval
+       (merge (:single-commands command-context))
+       (map (fn [[k v]]
+              {k (assoc v :name (name k))}))
+       (apply merge)))
 
 (defn- execute-command [key opts args]
   (let [command (:app (get (create-commands) key))]
     (apply command opts args)))
-
-(defn- command-help [command commands]
-  (str (name command) "\t"
-       (:description (command commands)) "\n"
-       (:summary (parse-opts nil (:options (command commands)))) "\n\n"))
 
 (defn handle-exception
   "Handle exceptions thrown from CLI commands."
@@ -69,10 +65,10 @@
   {:style/indent 0}
   [& forms]
   (let [ex (gensym)]
-   `(try
-      ~@forms
-      (catch Exception ~ex
-        (handle-exception ~ex)))))
+    `(try
+       ~@forms
+       (catch Exception ~ex
+         (handle-exception ~ex)))))
 
 (defn error-msg
   "Print every element of the sequence **errors**.  If there **errors** is a
@@ -81,10 +77,37 @@
   (if (= (count errors) 1)
     (format "%s: %s" (program-name) (first errors))
     (str "The following errors occurred while parsing your command:\n\n"
-         (str/join \newline errors))))
+         (s/join \newline errors))))
+
+(defn- command-help
+  ([{:keys [name] :as command}]
+   (command-help command (count name)))
+  ([{:keys [name description options] :as command} max-len]
+   (str (format (str "%-" (+ 4 max-len) "s") name)
+        description \newline
+        (:summary (parse-opts nil options))
+        (if-not (empty? options) \newline))))
+
+(defn- help-msg [command-context commands command-key]
+  (let [{:keys [print-help-fn]} command-context
+        command-keys (or (:command-print-order command-context)
+                         (concat (->> (:command-defs command-context)
+                                      (map first))
+                                 (keys (:single-commands command-context))))
+        name-len (->> (vals commands)
+                      (map #(-> % :name name count))
+                      (apply max))
+        command (get commands command-key)]
+    (->> (if command
+           (command-help command)
+           (->> (map #(get commands %) command-keys)
+                (map #(command-help % name-len))
+                (s/join \newline)))
+         ((or print-help-fn identity)))))
 
 (defn process-arguments
-  "Process the command line, which contains the command (action) and arguments `args-raw`.
+  "Process the command line, which contains the command (action) and arguments
+  `args`.
 
   The command context is a map with actions.  Actions in turn contains what to
   run when an action is given.
@@ -101,27 +124,25 @@
 
   See the [main document page](https://github.com/plandes/clj-actioncli) for
   more info."
-  [command-context & args-raw]
-  (let [args (if (empty? args-raw)
+  [command-context & args]
+  (let [args (if (empty? args)
                (:default-arguments command-context)
-               args-raw)
-        {global-opts :options arguments :arguments summary :summary}
-        (parse-opts args global-commands :in-order true)
+               args)
+        {:keys [options arguments summary]} (parse-opts args global-commands
+                                                        :in-order true)
         commands (create-commands command-context)
-        command (keyword (first arguments))]
-    (if (or (:help global-opts)
-            (nil? (get commands command)))
-      (if (get commands command)
-        (println (command-help command commands))
-        (doall
-         (apply print (map #(command-help % commands) (keys commands)))
-         (flush)))
+        command-key (keyword (first arguments))
+        command (get commands command-key)]
+    (if (or (:help options) (nil? command))
+      (println (help-msg command-context commands command-key))
       (let [{command-opts :options
              command-args :arguments
              errors :errors}
-            (parse-opts arguments (get (get commands command) :options))]
+            (parse-opts arguments (:options command))]
         (if errors
           (do
             (println (error-msg errors))
-            (println (command-help command commands)))
-          ((get (get commands command) :app) command-opts command-args))))))
+            (println (command-help command)))
+          ((get (get commands command-key) :app)
+           command-opts
+           (rest command-args)))))))

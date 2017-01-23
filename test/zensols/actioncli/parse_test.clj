@@ -69,6 +69,8 @@
   (testing "parse"
     (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
+    (is (= "tst2    test2 action\n\ntst     test action\n  -h, --headless     start an nREPL server\n  -p, --port <port>  database port\n\n"
+           (with-out-str (main-multi-action-cli "-h"))))
     (is (= '({:global-noop true})
            (main-multi-action-cli "-v")))
     (is (= {:errors ["Port must be specified"]}

@@ -70,15 +70,24 @@ Keys
 * **help-option:** the help action command, which defaults to [[help-option]]
 * **version-option:** usually created with [[version-option]]
 * **global-actions:** addition global actions in addition to the help and
-  version options listed above"
+  version options listed above
+
+* **action-print-order:** an optional sequence of action name keys indicating
+  what order to print action help
+
+* **print-help-fn:** an optional function that takes a string argument of the
+  generated option help to provide a way to customize the help message"
   [actions &
-   {:keys [global-actions help-option version-option]
+   {:keys [global-actions help-option version-option
+           action-print-order print-help-fn]
     :or {help-option (help-option)}}]
-  {:action-definitions actions
-   :global-actions (concat global-actions
-                           (if help-option [help-option])
-                           (if version-option [version-option]))
-   :action-mode 'multi})
+  (merge (if action-print-order {:action-print-order action-print-order})
+         (if print-help-fn {:print-help-fn print-help-fn})
+         {:action-definitions actions
+          :global-actions (concat global-actions
+                                  (if help-option [help-option])
+                                  (if version-option [version-option]))
+          :action-mode 'multi}))
 
 (defn single-action-context
   "Create a single action context with map **action**.  These don't include the

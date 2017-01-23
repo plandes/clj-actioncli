@@ -186,12 +186,13 @@ Keys
                        (map count)
                        (apply max))
          action (get actions action-key)]
-     (->> (format "usage: %s [options]"
+     (->> (format "usage: %s%s [options]"
+                  (program-name)
                   (if single-action-mode
-                    (program-name)
+                    ""
                     (->> action-names
                          (s/join "|")
-                         (format "<%s>"))))
+                         (format " <%s>"))))
           println)
      (->> (if action
             (action-help action)

@@ -73,7 +73,7 @@ test action
   (testing "parse"
     (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
-    (is (= "usage: <tst2|tst> [options]
+    (is (= "usage: prog <tst2|tst> [options]
 tst2    test2 action
 
 tst     test action

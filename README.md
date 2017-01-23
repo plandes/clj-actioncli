@@ -36,6 +36,18 @@ you want to start it with the command:
 $ java -jar serviceapp.jar service -p 8080
 ```
 
+There are three kinds of action commands:
+
+* **Global action:** These are parsed first before anything else and usually
+  trigger an early exit.  Example options include `--help`, `-h`, `--version`.
+* **Single action:** These don't include the name of the action on the command
+  line and are typical UNIX like command lines.  Examples include `ls`, `grep`,
+  etc.
+* **Multi-action:** These include the an action name (think operand) at the
+  beginning of the command line.  Examples include `git clone` where `clone` is
+  the action name.
+
+
 Create the following files: service.clj and core.clj
 ### src/com/example/service.clj
 ```clojure
@@ -65,23 +77,25 @@ Create the following files: service.clj and core.clj
   (:require (base))
   (:gen-class :main true))
 
-(def ^:private version-info-command
+(def version-info-action
   {:description "Get the version of the application."
    :options [["-g" "--gitref"]]
    :app (fn [{refp :gitref} & args]
           (println "0.0.1")
           (if refp (println "<some git ref>")))})
 
-(defn- create-command-context []
-  {:command-defs '((:service com.example service start-server-command)
-                   (:repl zensols.actioncli repl repl-command))
-   :single-commands {:version version-info-command}
-   :default-arguments ["service" "-p" "8080"]})
+(defn- create-action-context []
+  (multi-action-context
+   '((:service com.example service start-server-action)
+     (:repl zensols.actioncli repl repl-action))
+   :version-option version-info-action
+   :default-arguments ["service" "-p" "8080"]))
 
 (defn -main [& args]
   (lu/configure "service-log4j2.xml")
-  (let [command-context (create-command-context)]
-    (apply parse/process-arguments command-context args)))
+  (parse/set-program-name "nlpserver")
+  (-> (create-action-context)
+      (parse/process-arguments args)))
 ```
 
 ### resources/service-log4j.xml

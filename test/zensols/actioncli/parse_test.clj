@@ -4,7 +4,7 @@
             [clojure.string :as s])
   (:require [zensols.actioncli.parse :refer :all]))
 
-(def ^:private test-action
+(def test-action
   {:description "test action"
    :options
    [["-h" "--headless" "start an nREPL server"]
@@ -16,35 +16,32 @@
    :app (fn [opts & args]
           ["testcmd" opts args])})
 
-(def help-option
-  {:description "print help information and exit"
-   :options [["-h" "--help"]]
-   :app (fn [{:keys [help]} & args]
-          (if help {:global-help true}))})
-
-(def version-option
-  {:description "print version and exit"
-   :options [["-v" "--version"]]
-   :app (fn [{:keys [version]} & args]
-          (when version
-            (println "version: v1")
-            {:global-noop true}))})
+(def test2-action
+  {:description "test2 action"
+   :options []
+   :app (fn [opts & args]
+          ["testcmd 2" opts args])})
 
 (defn- create-action-single-context []
-  {:single-actions {:tst test-action}
-   :global-actions [help-option version-option]
-   :action-mode 'single})
+  (single-action-context '(zensols.actioncli.parse-test test-action)
+                         :version-option
+                         (->> (fn [] (println "version string"))
+                              version-option)))
 
 (defn- main-single-action-cli [& args]
-  (let [action-context (create-action-single-context)]
-    (apply process-arguments action-context args)))
+  (-> (create-action-single-context)
+      (process-arguments args)))
 
 (deftest test-parse-single
   (testing "parse single action"
-    (is (= '({:global-help true})
+    (is (= '({:global-help true :global-noop true})
            (main-single-action-cli "-h")))
+    (is (= "test action\n  -h, --headless     start an nREPL server\n  -p, --port <port>  database port\n\n"
+           (with-out-str (main-single-action-cli "-h"))))
     (is (= '({:global-noop true})
            (main-single-action-cli "-v")))
+    (is (= "version string\n"
+           (with-out-str (main-single-action-cli "-v"))))
     (is (= {:errors ["Port must be specified"]}
            (main-single-action-cli)))
     (is (= {:errors ["Missing required argument for \"-p <port>\"" "Port must be specified"]}
@@ -56,24 +53,21 @@
     (is (= ["testcmd" {:port 123 :headless true} '(("arg1"))]
            (main-single-action-cli "-h" "-p" "123" "arg1")))))
 
-(def ^:private test2-action
-  {:description "test2 action"
-   :options []
-   :app (fn [opts & args]
-          ["testcmd 2" opts args])})
-
 (defn- create-action-multi-context []
-  {:single-actions {:tst test-action
-                     :tst2 test2-action}
-   :global-actions [help-option version-option]})
+  (multi-action-context
+   '((:tst2 zensols.actioncli.parse-test test2-action)
+     (:tst zensols.actioncli.parse-test test-action))
+   :version-option
+   (->> (fn [] (println "version string"))
+        version-option)))
 
 (defn- main-multi-action-cli [& args]
-  (let [action-context (create-action-multi-context)]
-    (apply process-arguments action-context args)))
+  (-> (create-action-multi-context)
+      (process-arguments args)))
 
 (deftest test-parse
   (testing "parse"
-    (is (= '({:global-help true})
+    (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
     (is (= '({:global-noop true})
            (main-multi-action-cli "-v")))

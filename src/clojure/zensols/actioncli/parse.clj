@@ -16,24 +16,97 @@
 
 (defa- program-name-inst "prog")
 
-(defn program-name []
+(defn program-name
+  "Return the program name used for info/error message.  This is set
+  with [[set-program-name]]."
+  []
   @program-name-inst)
 
-(defn set-program-name [program-name]
+(defn set-program-name
+  "Set the program name used for info/error message."
+  [program-name]
   (reset! program-name-inst program-name))
 
+(defn help-option
+  "Return an option that provides version information."
+  ([]
+   (help-option "-h" "--help"))
+  ([short long]
+   {:description "print help information and exit"
+    :options [[short long]]
+    :app (fn [{:keys [help]} & args]
+           (if help
+             {:global-help true
+              :global-noop true}))}))
+
+(defn version-option
+  "Return an option that provides version information.  The option uses
+  **print-fn** to print the version of the program."
+  ([print-fn]
+   (version-option print-fn "-v" "--version"))
+  ([print-fn short long]
+   {:description "print version and exit"
+    :options [[short long]]
+    :app (fn [{:keys [version]} & args]
+           (when version
+             (print-fn)
+             {:global-noop true}))}))
+
+(defn multi-action-context
+  "Create a multi-action context with map **action**.  These don't include the
+  name of the action on the command line and are typical UNIX like command
+  lines (ex: `ls`, `grep`, etc).
+
+  The parameter is **action** is a list of list of symbols takes the form:
+```
+'((:action-name1 package1 action1)
+  ...)
+```
+  where **action-name** is a key, **package** is the package and **action** is
+  the action definition.
+
+Keys
+----
+* **help-option:** the help action command, which defaults to [[help-option]]
+* **version-option:** usually created with [[version-option]]
+* **global-actions:** addition global actions in addition to the help and
+  version options listed above"
+  [actions &
+   {:keys [global-actions help-option version-option]
+    :or {help-option (help-option)}}]
+  {:action-definitions actions
+   :global-actions (concat global-actions
+                           (if help-option [help-option])
+                           (if version-option [version-option]))
+   :action-mode 'multi})
+
+(defn single-action-context
+  "Create a single action context with map **action**.  These don't include the
+  name of the action on the command line and are typical UNIX like command
+  lines (ex: `ls`, `grep`, etc).
+
+  The parameter is **action** is a list of symbols that takes the form:
+```
+'(package action)
+```
+  where **package** is the package and **action** is the action definition.
+
+  See [[multi-action-context]] for the description of **options**."
+  [action & options]
+  (-> (cons :single-action action)
+      list
+      (#(apply multi-action-context % options))
+      (merge {:action-mode 'single})))
+
 (defn- create-actions [action-context]
-  (->> (:action-defs action-context)
-       (map (fn [[key pkg-parent pkg-child action-def]]
-              (let [req (list 'require `(quote (~pkg-parent ~pkg-child)))]
+  (->> (:action-definitions action-context)
+       (map (fn [[key package action-def]]
+              (let [req (list 'require `(quote (~package)))]
                 (eval req)
-                {key (symbol (format "%s.%s/%s" pkg-parent
-                                     pkg-child action-def))})))
-       (apply merge)
-       eval
-       (merge (:single-actions action-context))
-       (map (fn [[k v]]
-              {k (assoc v :name (name k))}))
+                {key (-> (format "%s/%s" package action-def)
+                         symbol
+                         eval
+                         (assoc :name (name key)))})))
        (apply merge)))
 
 (defn- execute-action [key opts args]
@@ -90,8 +163,7 @@
 
 (defn- action-keys [action-context]
   (or (:action-print-order action-context)
-      (concat (map first (:action-defs action-context))
-              (keys (:single-actions action-context)))))
+      (map first (:action-definitions action-context))))
 
 (defn- help-msg
   ([action-context actions]
@@ -116,6 +188,8 @@
   (let [{app :app option-defs :options} action
         {:keys [options arguments errors summary]}
         (cli/parse-opts arguments option-defs :strict true)]
+    (if (nil? app)
+      (throw (ex-info "Programmer error: missing app" {})))
     (if errors
       (do
         (if print-errors?
@@ -153,19 +227,22 @@
   The action context is a map with actions.  Actions in turn contains what to
   run when an action is given.
 
-  An example of a action context:
+  An example of an action context:
 
 ```clojure
 (defn- create-action-context []
-  {:action-defs '((:service com.example service start-server-action)
-                   (:repl zensols.actioncli repl repl-action))
-   :single-actions {:version version-info-action}
-   :default-arguments [\"service\" \"-p\" \"8080\"]})
+  (multi-action-context
+   '((:service com.example service start-server-action)
+     (:repl zensols.actioncli repl repl-action))
+   :version-option
+   (->> (fn [] (println \"version string\"))
+        version-option)
+   :default-arguments [\"service\" \"-p\" \"8080\"]))
 ```
 
   See the [main document page](https://github.com/plandes/clj-actioncli) for
   more info."
-  [action-context & args]
+  [action-context args]
   (let [arguments (if (empty? args)
                     (:default-arguments action-context)
                     args)

@@ -110,12 +110,11 @@ Keys
 (defn- create-actions [action-context]
   (->> (:action-definitions action-context)
        (map (fn [[key package action-def]]
-              (let [req (list 'require `(quote (~package)))]
-                (eval req)
-                {key (-> (format "%s/%s" package action-def)
-                         symbol
-                         eval
-                         (assoc :name (name key)))})))
+              (eval (list 'require `(quote [~package])))
+              {key (-> (format "%s/%s" package action-def)
+                       symbol
+                       eval
+                       (assoc :name (name key)))}))
        (apply merge)))
 
 (defn- execute-action [key opts args]
@@ -198,7 +197,9 @@ Keys
         {:keys [options arguments errors summary]}
         (cli/parse-opts arguments option-defs :strict true)]
     (if (nil? app)
-      (throw (ex-info "Programmer error: missing app" {})))
+      (throw (ex-info (format "Programmer error: missing app: action=%s"
+                              action)
+                      {:action action})))
     (if errors
       (do
         (if print-errors?

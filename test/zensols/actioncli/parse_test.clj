@@ -36,7 +36,8 @@
   (testing "parse single action"
     (is (= '({:global-help true :global-noop true})
            (main-single-action-cli "-h")))
-    (is (= "test action
+    (is (= "usage: prog [options]
+test action
   -h, --headless     start an nREPL server
   -p, --port <port>  database port
 "
@@ -72,7 +73,8 @@
   (testing "parse"
     (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
-    (is (= "tst2    test2 action
+    (is (= "usage: <tst2|tst> [options]
+tst2    test2 action
 
 tst     test action
   -h, --headless     start an nREPL server

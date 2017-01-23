@@ -178,15 +178,25 @@ Keys
    (help-msg action-context actions nil))
   ([action-context actions action-key]
    (let [{:keys [print-help-fn action-mode]} action-context
+         single-action-mode (= 'single action-mode)
          action-keys (action-keys action-context)
-         name-len (->> (vals actions)
-                       (map #(-> % :name name count))
+         action-names (->> (vals actions)
+                           (map #(-> % :name name)))
+         name-len (->> action-names
+                       (map count)
                        (apply max))
          action (get actions action-key)]
+     (->> (format "usage: %s [options]"
+                  (if single-action-mode
+                    (program-name)
+                    (->> action-names
+                         (s/join "|")
+                         (format "<%s>"))))
+          println)
      (->> (if action
             (action-help action)
             (->> (map #(get actions %) action-keys)
-                 (map #(action-help % (= 'single action-mode) name-len))
+                 (map #(action-help % single-action-mode name-len))
                  (s/join (str \newline\newline))))
           ((or print-help-fn identity))))))
 

@@ -36,7 +36,10 @@
   (testing "parse single action"
     (is (= '({:global-help true :global-noop true})
            (main-single-action-cli "-h")))
-    (is (= "test action\n  -h, --headless     start an nREPL server\n  -p, --port <port>  database port\n\n"
+    (is (= "test action
+  -h, --headless     start an nREPL server
+  -p, --port <port>  database port
+"
            (with-out-str (main-single-action-cli "-h"))))
     (is (= '({:global-noop true})
            (main-single-action-cli "-v")))
@@ -69,7 +72,12 @@
   (testing "parse"
     (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
-    (is (= "tst2    test2 action\n\ntst     test action\n  -h, --headless     start an nREPL server\n  -p, --port <port>  database port\n\n"
+    (is (= "tst2    test2 action
+
+tst     test action
+  -h, --headless     start an nREPL server
+  -p, --port <port>  database port
+"
            (with-out-str (main-multi-action-cli "-h"))))
     (is (= '({:global-noop true})
            (main-multi-action-cli "-v")))

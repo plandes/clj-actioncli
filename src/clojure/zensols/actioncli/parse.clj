@@ -166,8 +166,7 @@ Keys
    (str (if-not skip-action-name?
           (format (str "%-" (+ 4 max-len) "s") name))
         description \newline
-        (:summary (cli/parse-opts nil options))
-        (if-not (empty? options) \newline))))
+        (:summary (cli/parse-opts nil options)))))
 
 (defn- action-keys [action-context]
   (or (:action-print-order action-context)

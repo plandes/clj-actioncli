@@ -40,7 +40,7 @@
    (log-level-set-option "-l" "--level"))
   ([short long]
    [short long "Log level to set in the Log4J2 system."
-    :required "log level"
+    :required "<log level>"
     :default (Level/toLevel "info")
     :parse-fn #(Level/toLevel % nil)
     :validate [(fn [level]

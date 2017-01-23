@@ -165,7 +165,8 @@ Keys
   ([{:keys [name description options] :as action} skip-action-name? max-len]
    (str (if-not skip-action-name?
           (format (str "%-" (+ 4 max-len) "s") name))
-        description \newline
+        description
+        (if-not (empty? options) \newline)
         (:summary (cli/parse-opts nil options)))))
 
 (defn- action-keys [action-context]
@@ -186,7 +187,7 @@ Keys
             (action-help action)
             (->> (map #(get actions %) action-keys)
                  (map #(action-help % (= 'single action-mode) name-len))
-                 (s/join \newline)))
+                 (s/join (str \newline\newline))))
           ((or print-help-fn identity))))))
 
 (defn- parse-single [action-context action arguments single-action-mode?

@@ -52,6 +52,20 @@
              (print-fn)
              {:global-noop true}))}))
 
+(defn create-default-usage-format
+  "Create a function that formats the usage statement."
+  ([]
+   (create-default-usage-format "usage: %s%s [options]"))
+  ([usage-format]
+   (fn [action-names]
+     (->> (format usage-format
+                  (program-name)
+                  (if-not action-names
+                    ""
+                    (->> action-names
+                         (s/join "|")
+                         (format " <%s>"))))))))
+
 (defn multi-action-context
   "Create a multi-action context with map **action**.  These don't include the
   name of the action on the command line and are typical UNIX like command
@@ -71,18 +85,20 @@ Keys
 * **version-option:** usually created with [[version-option]]
 * **global-actions:** addition global actions in addition to the help and
   version options listed above
-
 * **action-print-order:** an optional sequence of action name keys indicating
   what order to print action help
-
 * **print-help-fn:** an optional function that takes a string argument of the
-  generated option help to provide a way to customize the help message"
+  generated option help to provide a way to customize the help message
+* **usage-format-fn:** generate the usage portion of the help message that
+  takes the names of all action if generating multi-action usage or nil for
+  single action usage messages"
   [actions &
    {:keys [global-actions help-option version-option
-           action-print-order print-help-fn]
+           action-print-order print-help-fn usage-format-fn]
     :or {help-option (help-option)}}]
   (merge (if action-print-order {:action-print-order action-print-order})
          (if print-help-fn {:print-help-fn print-help-fn})
+         {:usage-format-fn (or usage-format-fn (create-default-usage-format))}
          {:action-definitions actions
           :global-actions (concat global-actions
                                   (if help-option [help-option])
@@ -177,7 +193,7 @@ Keys
   ([action-context actions]
    (help-msg action-context actions nil))
   ([action-context actions action-key]
-   (let [{:keys [print-help-fn action-mode]} action-context
+   (let [{:keys [print-help-fn usage-format-fn action-mode]} action-context
          single-action-mode (= 'single action-mode)
          action-keys (action-keys action-context)
          action-names (->> (vals actions)
@@ -185,15 +201,9 @@ Keys
          name-len (->> action-names
                        (map count)
                        (apply max))
-         action (get actions action-key)]
-     (->> (format "usage: %s%s [options]"
-                  (program-name)
-                  (if single-action-mode
-                    ""
-                    (->> action-names
-                         (s/join "|")
-                         (format " <%s>"))))
-          println)
+         action (get actions action-key)
+         usage-text (usage-format-fn (if-not single-action-mode action-names))]
+     (println usage-text)
      (->> (if action
             (action-help action)
             (->> (map #(get actions %) action-keys)
@@ -206,7 +216,7 @@ Keys
                         :or {print-errors? true}}]
   (let [{app :app option-defs :options} action
         {:keys [options arguments errors summary]}
-        (cli/parse-opts arguments option-defs :strict true)]
+        (cli/parse-opts arguments option-defs)]
     (if (nil? app)
       (throw (ex-info (format "Programmer error: missing app: action=%s"
                               action)
@@ -218,7 +228,7 @@ Keys
                (map println)
                doall))
         {:errors errors})
-      (app options arguments))))
+      (apply app (cons options arguments)))))
 
 (defn- parse-multi [action-context actions arguments]
   (let [action-keys (action-keys action-context)

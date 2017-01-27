@@ -50,11 +50,11 @@ test action
            (main-single-action-cli)))
     (is (= {:errors ["Missing required argument for \"-p <port>\"" "Port must be specified"]}
            (main-single-action-cli "-p")))
-    (is (= ["testcmd" {:port 123} '(())]
+    (is (= ["testcmd" {:port 123} nil]
            (main-single-action-cli "-p" "123")))
-    (is (= ["testcmd" {:port 123 :headless true} '(())]
+    (is (= ["testcmd" {:port 123 :headless true} nil]
            (main-single-action-cli "-h" "-p" "123")))
-    (is (= ["testcmd" {:port 123 :headless true} '(("arg1"))]
+    (is (= ["testcmd" {:port 123 :headless true} '("arg1")]
            (main-single-action-cli "-h" "-p" "123" "arg1")))))
 
 (defn- create-action-multi-context []
@@ -85,9 +85,9 @@ tst     test action
            (main-multi-action-cli "-v")))
     (is (= {:errors ["Port must be specified"]}
            (main-multi-action-cli "tst")))
-    (is (= ["testcmd" {:port 123} '(())]
+    (is (= ["testcmd" {:port 123} nil]
            (main-multi-action-cli "tst" "-p" "123")))
-    (is (= ["testcmd" {:port 123 :headless true} '(())]
+    (is (= ["testcmd" {:port 123 :headless true} nil]
            (main-multi-action-cli "tst" "-h" "-p" "123")))
-    (is (= ["testcmd" {:port 123 :headless true} '(("arg1"))]
+    (is (= ["testcmd" {:port 123 :headless true} '("arg1")]
            (main-multi-action-cli "tst" "-h" "-p" "123" "arg1")))))

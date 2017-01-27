@@ -11,7 +11,7 @@
           :project {:name "Action CLI"}
           :output-path "target/doc/codox"}
   :javadoc-opts {:package-names ["com.zensols.log"]
-                 :output-dir "doc/apidocs"}
+                 :output-dir "target/doc/apidocs"}
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]

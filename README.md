@@ -20,7 +20,9 @@ In your `project.clj` file, add:
 
 Documentation
 -------------
-Additional [documentation](https://plandes.github.io/clj-actioncli/codox/index.html).
+Additional documentation:
+* [Java](https://plandes.github.io/clj-actioncli/apidocs/index.html)
+* [Clojure](https://plandes.github.io/clj-actioncli/codox/index.html)
 
 Usage
 -----

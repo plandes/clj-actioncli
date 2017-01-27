@@ -10,7 +10,7 @@
   :codox {:metadata {:doc/format :markdown}
           :project {:name "Action CLI"}
           :output-path "target/doc/codox"}
-  :javadoc-opts {:package-names ["com.zensols.gui.tabres"]
+  :javadoc-opts {:package-names ["com.zensols.log"]
                  :output-dir "doc/apidocs"}
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]

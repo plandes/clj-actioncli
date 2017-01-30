@@ -235,8 +235,7 @@ Keys
         action-key (keyword (first arguments))
         action (get actions action-key)]
     (if (nil? action)
-      (do (print (help-msg action-context actions action-key))
-          (flush))
+      (println (help-msg action-context actions action-key))
       (parse-single action-context action (rest arguments) false))))
 
 (defn- parse-global [action-context actions arguments]

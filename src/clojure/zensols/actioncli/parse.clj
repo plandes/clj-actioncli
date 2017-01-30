@@ -180,7 +180,7 @@ Keys
    (action-help action skip-action-name? (count name)))
   ([{:keys [name description options] :as action} skip-action-name? max-len]
    (str (if-not skip-action-name?
-          (format (str "%-" (+ 4 max-len) "s") name))
+          (format (str "  %-" (+ 4 max-len) "s") name))
         description
         (if-not (empty? options) \newline)
         (:summary (cli/parse-opts nil options)))))

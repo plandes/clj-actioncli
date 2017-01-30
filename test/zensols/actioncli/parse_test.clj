@@ -74,9 +74,9 @@ test action
     (is (= '({:global-help true :global-noop true})
            (main-multi-action-cli "-h")))
     (is (= "usage: prog <tst2|tst> [options]
-tst2    test2 action
+  tst2    test2 action
 
-tst     test action
+  tst     test action
   -h, --headless     start an nREPL server
   -p, --port <port>  database port
 "

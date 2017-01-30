@@ -88,14 +88,13 @@ Create the following files: service.clj and core.clj
   (:require [zensols.actioncli.parse :as parse]
             [zensols.actioncli.log4j2 :as lu])
   (:require [example.version])
-  (:require (base))
   (:gen-class :main true))
 
 (defn- version-info-action []
   (println (format "%s (%s)" example.version/version example.version/gitref)))
 
 (defn- create-action-context []
-  (multi-action-context
+  (parse/multi-action-context
    '((:service com.example service start-server-action)
      (:repl zensols.actioncli repl repl-action))
    :version-option version-info-action

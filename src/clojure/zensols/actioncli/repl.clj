@@ -33,7 +33,7 @@
   {:description "start a repl either on the command line or headless with -h"
    :options
    [["-h" "--headless" "start an nREPL server"]
-    repl-port-set-option]
+    (repl-port-set-option)]
    :app (fn [{:keys [port headless]} & args]
           (if headless
             (run-server port)

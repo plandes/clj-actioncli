@@ -1,5 +1,4 @@
-Command line interface action oriented framework
-================================================
+# Command line interface action oriented framework
 
 This library parses *action based* command line arguments and invokes the
 corresponding code.  Action based means using the first token (after the binary
@@ -12,26 +11,38 @@ This package has a few other basic utility libraries that is used by this
 package but useful for many others (i.e. file system path register and
 resolution).
 
-Obtaining
----------
+# Obtaining
+
 In your `project.clj` file, add:
 
 [![Clojars Project](http://clojars.org/com.zensols.tools/actioncli/latest-version.svg)](http://clojars.org/com.zensols.tools/actioncli/)
 
-Documentation
--------------
+
+# Documentation
+
 Additional documentation:
 * [Java](https://plandes.github.io/clj-actioncli/apidocs/index.html)
 * [Clojure](https://plandes.github.io/clj-actioncli/codox/index.html)
 
-Usage
------
+
+# Usage
+
 This package supports:
+* [Templating](#templating)
 * [Action Commands](#action-commands)
 * [Resource Location](#resource-location)
 * [Executing Action Commands](#executing)
 
-# Action Commands
+
+## Templating
+
+You can use the [make project](https://github.com/plandes/clj-mkproj) utility
+with the [lein project](https://github.com/plandes/template/tree/master/lein)
+directory to template out the files in the following secion.
+
+
+## Action Commands
+
 Say you're writing a web service (among other things an uberjar might have) and
 you want to start it with the command:
 ```shell
@@ -76,15 +87,12 @@ Create the following files: service.clj and core.clj
 (ns com.example.core
   (:require [zensols.actioncli.parse :as parse]
             [zensols.actioncli.log4j2 :as lu])
+  (:require [example.version])
   (:require (base))
   (:gen-class :main true))
 
-(def version-info-action
-  {:description "Get the version of the application."
-   :options [["-g" "--gitref"]]
-   :app (fn [{refp :gitref} & args]
-          (println "0.0.1")
-          (if refp (println "<some git ref>")))})
+(defn- version-info-action []
+  (println (format "%s (%s)" example.version/version example.version/gitref)))
 
 (defn- create-action-context []
   (multi-action-context
@@ -182,7 +190,7 @@ same (parent of this file) directory as this project:
 
 License
 --------
-Copyright © 2016 Paul Landes
+Copyright © 2017 Paul Landes
 
 Apache License version 2.0
 

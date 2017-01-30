@@ -95,9 +95,9 @@ Create the following files: service.clj and core.clj
 
 (defn- create-action-context []
   (parse/multi-action-context
-   '((:service com.example service start-server-action)
-     (:repl zensols.actioncli repl repl-action))
-   :version-option version-info-action
+   '((:service com.example.service start-server-action)
+     (:repl zensols.actioncli.repl repl-action))
+   :version-option (parse/version-option version-info-action)
    :default-arguments ["service" "-p" "8080"]))
 
 (defn -main [& args]

@@ -14,6 +14,11 @@
   "Log exceptions in [[handle-exception]]."
   false)
 
+(def ^:dynamic *rethrow-error*
+  "When not dying on error with [[*dump-jvm-on-error*]] also don't rethrow the
+  exception in [[handle-exception]]."
+  true)
+
 (defa- program-name-inst "prog")
 
 (defn program-name
@@ -153,7 +158,7 @@ Keys
                            (.toString e)))))))
   (if *dump-jvm-on-error*
     (System/exit 1)
-    (throw e)))
+    (if *rethrow-error* (throw e))))
 
 (defmacro with-exception
   "Wrap a CLI forms in a `try` and call [[handle-exception]] if an exception

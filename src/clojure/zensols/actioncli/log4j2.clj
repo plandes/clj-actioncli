@@ -13,6 +13,10 @@
                   (constantly (fac/log4j2-factory)))
   (catch Exception e))
 
+(def log-level-set-option-default
+  "Default log level for [[log-level-set-option]]."
+  (Level/toLevel "info"))
+
 (defn change-log-level
   "Change the Log4j2 log level.
 
@@ -36,12 +40,15 @@
     (log/debugf "configured with XML resource: %s" xml-resource)))
 
 (defn log-level-set-option
+  "Create an option that sets the Log4j2 level.  Note that all you need to do
+  is add this to the option definition and the log level is set in the validate
+  phase."
   ([]
    (log-level-set-option "-l" "--level"))
   ([short long]
    [short long "Log level to set in the Log4J2 system."
     :required "<log level>"
-    :default (Level/toLevel "info")
+    :default log-level-set-option-default
     :parse-fn #(Level/toLevel % nil)
     :validate [(fn [level]
                  (when level

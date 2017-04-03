@@ -128,7 +128,7 @@ Keys
       (#(apply multi-action-context % options))
       (merge {:action-mode 'single})))
 
-(defn- create-actions [action-context]
+(defn create-actions [action-context]
   (->> (:action-definitions action-context)
        (map (fn [[key package action-def]]
               (eval (list 'require `(quote [~package])))

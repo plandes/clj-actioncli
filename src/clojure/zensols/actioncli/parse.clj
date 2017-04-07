@@ -19,6 +19,21 @@
   exception in [[handle-exception]]."
   true)
 
+(def ^:dynamic *parse-context*
+  "This context is bound when calling action bound functions.  This is useful
+  when other functions in this namespace need to be called with parse
+  information.
+
+  This context is a map with the following keys:
+
+  * **:action-context** the context created with [[multi-action-context]]
+  or [[single-action-context]]
+  * **:arguments** the arguments passed to the parse function
+  * **:options** the parsed options
+  * **:single-action-mode?** whether the action context was created
+  with [[multi-action-context]] or [[single-action-context]]"
+  nil)
+
 (defa- program-name-inst "prog")
 
 (defn program-name
@@ -197,64 +212,80 @@ Keys
   (or (:action-print-order action-context)
       (map first (:action-definitions action-context))))
 
-(defn- help-msg
-  ([action-context actions]
-   (help-msg action-context actions nil))
-  ([action-context actions action-key]
-   (let [{:keys [print-help-fn usage-format-fn action-mode]} action-context
-         single-action-mode (= 'single action-mode)
-         action-keys (action-keys action-context)
-         action-names (->> (vals actions)
-                           (map #(-> % :name name)))
-         name-len (->> action-names
-                       (map count)
-                       (apply max))
-         action (get actions action-key)
-         usage-text (usage-format-fn (if-not single-action-mode action-names))]
-     (println usage-text)
+(defn help-message
+  [& {:keys [action-key usage]
+      :or {usage true}}]
+  (let [{:keys [action-context actions]} *parse-context*
+        {:keys [print-help-fn usage-format-fn action-mode]} action-context
+        single-action-mode (= 'single action-mode)
+        action-keys (action-keys action-context)
+        action-names (->> (vals actions)
+                          (map #(-> % :name name)))
+        name-len (->> action-names
+                      (map count)
+                      (apply max))
+        action (get actions action-key)]
+    (if usage
+      (->> (if-not single-action-mode action-names)
+           usage-format-fn
+           println))
+    (if-not (= usage 'only)
      (->> (if action
-            (action-help action)
+            (action-help action single-action-mode name-len)
             (->> (map #(get actions %) action-keys)
                  (map #(action-help % single-action-mode name-len))
                  (s/join (str \newline\newline))))
           ((or print-help-fn identity))))))
 
-(defn- parse-single [action-context action arguments single-action-mode?
+(defn- parse-single [action-context actions action action-key
+                     arguments single-action-mode?
                      & {:keys [print-errors?]
                         :or {print-errors? true}}]
   (let [{app :app option-defs :options} action
         {:keys [options arguments errors summary]}
-        (cli/parse-opts arguments option-defs)]
-    (if (nil? app)
-      (throw (ex-info (format "Programmer error: missing app: action=%s"
-                              action)
-                      {:action action})))
-    (if errors
-      (do
-        (if print-errors?
-          (->> [(error-msg errors) (action-help action single-action-mode?)]
-               (map println)
-               doall))
-        {:errors errors})
-      (apply app (cons options arguments)))))
+        (cli/parse-opts arguments option-defs)
+        errors (if action
+                 errors
+                 (cons (format "No such action: %s" (name action-key))
+                       errors))]
+    (binding [*parse-context* {:action-context action-context
+                               :actions actions
+                               :action action
+                               :options options
+                               :arguments arguments
+                               :single-action-mode? single-action-mode?}]
+      (if (and (not errors) (nil? app))
+        (-> (format "Programmer error: missing app: action=%s"
+                                action)
+            (ex-info {:action action})
+            throw))
+      (if errors
+        (do
+          (if print-errors?
+            (->> (concat [(error-msg errors)]
+                         (if action [(action-help action single-action-mode?)]))
+                 (map println)
+                 doall))
+          {:errors errors})
+        (apply app (cons options arguments))))))
 
 (defn- parse-multi [action-context actions arguments]
   (let [action-keys (action-keys action-context)
         action-key (keyword (first arguments))
         action (get actions action-key)]
-    (if (nil? action)
-      (println (help-msg action-context actions action-key))
-      (parse-single action-context action (rest arguments) false))))
+    (parse-single action-context actions action action-key (rest arguments) false)))
 
 (defn- parse-global [action-context actions arguments]
   (let [{:keys [global-actions]} action-context]
    (->> global-actions
         (map (fn [action]
-               (let [res (parse-single action-context action arguments true
-                                       :print-errors? false)]
+               (let [res (parse-single actions action-context
+                                       action 'none arguments
+                                       true :print-errors? false)]
                  (cond (:global-help res)
-                       (do
-                         (println (help-msg action-context actions))
+                       (binding [*parse-context* {:action-context action-context
+                                                  :actions actions}]
+                         (println (help-message))
                          res)
                        (:global-noop res) res))))
         doall)))
@@ -293,5 +324,6 @@ Keys
     (if-not (empty? global-parsed)
       global-parsed
       (if single-action-mode?
-        (parse-single action-context (-> actions vals first) arguments true)
+        (let [action (-> actions vals first)]
+          (parse-single action-context actions action 'none arguments true))
         (parse-multi action-context actions arguments)))))

@@ -42,6 +42,12 @@
   []
   @program-name-inst)
 
+(defn- program-fmt []
+  (let [name (program-name)]
+    (if name
+      (str name ": ")
+      "")))
+
 (defn set-program-name
   "Set the program name used for info/error message."
   [program-name]
@@ -79,7 +85,7 @@
   ([usage-format]
    (fn [action-names]
      (->> (format usage-format
-                  (program-name)
+                  (or (program-name) "")
                   (if-not action-names
                     ""
                     (->> action-names
@@ -165,10 +171,10 @@ Keys
     (if *log-error* (log/error e "action line parse error"))
     (if (instance? java.io.FileNotFoundException e)
       (binding [*out* *err*]
-        (println (format "%s: io error: %s" (program-name) msg)))
+        (println (format "%sio error: %s" (program-fmt) msg)))
       (binding [*out* *err*]
-        (println (format "%s: error: %s"
-                         (program-name)
+        (println (format "%serror: %s"
+                         (program-fmt)
                          (if ex-data
                            (.getMessage e)
                            (.toString e)))))))
@@ -194,7 +200,7 @@ Keys
   singleton then only print one in the common usage format."
   [errors]
   (if (= (count errors) 1)
-    (format "%s: %s" (program-name) (first errors))
+    (str (program-fmt) (first errors))
     (str "The following errors occurred while parsing your action:\n\n"
          (s/join \newline errors))))
 

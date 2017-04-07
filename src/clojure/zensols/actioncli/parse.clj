@@ -145,6 +145,7 @@ Keys
 (defn handle-exception
   "Handle exceptions thrown from CLI actions."
   [e]
+  (log/debugf "handle exception: <%s>" e)
   (let [msg (.getMessage e)]
     (if *log-error* (log/error e "action line parse error"))
     (if (instance? java.io.FileNotFoundException e)
@@ -156,6 +157,8 @@ Keys
                          (if ex-data
                            (.getMessage e)
                            (.toString e)))))))
+  (log/debugf "dumping JVM: %s, rethrow: %s"
+              *dump-jvm-on-error* *rethrow-error*)
   (if *dump-jvm-on-error*
     (System/exit 1)
     (if *rethrow-error* (throw e))))

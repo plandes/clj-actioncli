@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Changelog
+- Accessible help function and featues (i.e. add usage etc).
 
 ### Changed
 - Fixing help message printing.

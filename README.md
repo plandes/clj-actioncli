@@ -1,5 +1,10 @@
 # Command line interface action oriented framework
 
+[![Travis CI Build Status][travis-badge]][travis-link]
+
+  [travis-link]: https://travis-ci.org/plandes/clj-actioncli
+  [travis-badge]: https://travis-ci.org/plandes/clj-actioncli.svg?branch=master
+
 This library parses *action based* command line arguments and invokes the
 corresponding code.  Action based means using the first token (after the binary
 name) as a mnemonic to invoke some action much like `clone` in `git clone`.
@@ -9,7 +14,8 @@ passed at invocation time.
 
 This package has a few other basic utility libraries that is used by this
 package but useful for many others (i.e. file system path register and
-resolution).
+xresolution).
+
 
 # Obtaining
 
@@ -176,8 +182,8 @@ user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
 
-Building
---------
+## Building
+
 All [leiningen](http://leiningen.org) tasks will work in this project.  For
 additional build functionality (git tag convenience utility functionality)
 clone the [Clojure build repo](https://github.com/plandes/clj-zenbuild) in the
@@ -187,8 +193,8 @@ same (parent of this file) directory as this project:
    git clone https://github.com/plandes/clj-zenbuild
 ```
 
-License
---------
+## License
+
 Copyright © 2017 Paul Landes
 
 Apache License version 2.0

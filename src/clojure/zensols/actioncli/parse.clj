@@ -213,6 +213,11 @@ Keys
       (map first (:action-definitions action-context))))
 
 (defn help-message
+  "Generate the help message text and return it.
+  The **action-key** is a keyword of the passed as a command
+  to [[multi-action-context]].  By default the usage text is included unless
+  the `:usage` key is `false`.  If the `:usage` is the symbol `only` then only
+  create the usage text and not the action/parameters."
   [& {:keys [action-key usage]
       :or {usage true}}]
   (let [{:keys [action-context actions]} *parse-context*

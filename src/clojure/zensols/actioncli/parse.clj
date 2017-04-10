@@ -92,6 +92,50 @@
                          (s/join "|")
                          (format " <%s>"))))))))
 
+(defn- action-keys [action-context]
+  (or (:action-print-order action-context)
+      (map first (:action-definitions action-context))))
+
+(defn- action-help
+  ([{:keys [name] :as action} skip-action-name?]
+   (action-help action skip-action-name? (count name)))
+  ([{:keys [name description options] :as action} skip-action-name? max-len]
+   (str (if-not skip-action-name?
+          (format (str "  %-" (+ 4 max-len) "s") name))
+        description
+        (if-not (empty? options) \newline)
+        (:summary (cli/parse-opts nil options)))))
+
+(defn help-message
+  "Generate the help message text and return it.
+  The **action-key** is a keyword of the passed as a command
+  to [[multi-action-context]].  By default the usage text is included unless
+  the `:usage` key is `false`.  If the `:usage` is the symbol `only` then only
+  create the usage text and not the action/parameters."
+  [& {:keys [action-key usage]
+      :or {usage true}}]
+  (let [{:keys [action-context actions]} *parse-context*
+        {:keys [print-help-fn usage-format-fn action-mode]} action-context
+        single-action-mode (= 'single action-mode)
+        action-keys (action-keys action-context)
+        action-names (->> (vals actions)
+                          (map #(-> % :name name)))
+        name-len (->> action-names
+                      (map count)
+                      (apply max))
+        action (get actions action-key)]
+    (if usage
+      (->> (if-not single-action-mode action-names)
+           usage-format-fn
+           println))
+    (if-not (= usage 'only)
+     (->> (if action
+            (action-help action single-action-mode name-len)
+            (->> (map #(get actions %) action-keys)
+                 (map #(action-help % single-action-mode name-len))
+                 (s/join (str \newline\newline))))
+          ((or print-help-fn identity))))))
+
 (defn multi-action-context
   "Create a multi-action context with map **action**.  These don't include the
   name of the action on the command line and are typical UNIX like command
@@ -117,11 +161,16 @@ Keys
   generated option help to provide a way to customize the help message
 * **usage-format-fn:** generate the usage portion of the help message that
   takes the names of all action if generating multi-action usage or nil for
-  single action usage messages"
+  single action usage messages
+* **:no-action-fn** a function to call when no action is given, defaults to
+  printing the contents of [[help-message]]; set to `nil` to continue
+  processing without an action"
   [actions &
    {:keys [global-actions help-option version-option
-           action-print-order print-help-fn usage-format-fn]
-    :or {help-option (help-option)}}]
+           action-print-order print-help-fn usage-format-fn
+           no-action-fn]
+    :or {help-option (help-option)
+         no-action-fn (fn [] (println (help-message)))}}]
   (merge (if action-print-order {:action-print-order action-print-order})
          (if print-help-fn {:print-help-fn print-help-fn})
          {:usage-format-fn (or usage-format-fn (create-default-usage-format))}
@@ -129,6 +178,8 @@ Keys
           :global-actions (concat global-actions
                                   (if help-option [help-option])
                                   (if version-option [version-option]))
+          
+          :no-action-fn no-action-fn
           :action-mode 'multi}))
 
 (defn single-action-context
@@ -204,50 +255,6 @@ Keys
     (str "The following errors occurred while parsing your action:\n\n"
          (s/join \newline errors))))
 
-(defn- action-help
-  ([{:keys [name] :as action} skip-action-name?]
-   (action-help action skip-action-name? (count name)))
-  ([{:keys [name description options] :as action} skip-action-name? max-len]
-   (str (if-not skip-action-name?
-          (format (str "  %-" (+ 4 max-len) "s") name))
-        description
-        (if-not (empty? options) \newline)
-        (:summary (cli/parse-opts nil options)))))
-
-(defn- action-keys [action-context]
-  (or (:action-print-order action-context)
-      (map first (:action-definitions action-context))))
-
-(defn help-message
-  "Generate the help message text and return it.
-  The **action-key** is a keyword of the passed as a command
-  to [[multi-action-context]].  By default the usage text is included unless
-  the `:usage` key is `false`.  If the `:usage` is the symbol `only` then only
-  create the usage text and not the action/parameters."
-  [& {:keys [action-key usage]
-      :or {usage true}}]
-  (let [{:keys [action-context actions]} *parse-context*
-        {:keys [print-help-fn usage-format-fn action-mode]} action-context
-        single-action-mode (= 'single action-mode)
-        action-keys (action-keys action-context)
-        action-names (->> (vals actions)
-                          (map #(-> % :name name)))
-        name-len (->> action-names
-                      (map count)
-                      (apply max))
-        action (get actions action-key)]
-    (if usage
-      (->> (if-not single-action-mode action-names)
-           usage-format-fn
-           println))
-    (if-not (= usage 'only)
-     (->> (if action
-            (action-help action single-action-mode name-len)
-            (->> (map #(get actions %) action-keys)
-                 (map #(action-help % single-action-mode name-len))
-                 (s/join (str \newline\newline))))
-          ((or print-help-fn identity))))))
-
 (defn- parse-single [action-context actions action action-key
                      arguments single-action-mode?
                      & {:keys [print-errors?]
@@ -257,7 +264,8 @@ Keys
         (cli/parse-opts arguments option-defs)
         errors (if action
                  errors
-                 (cons (format "No such action: %s" (name action-key))
+                 (cons (if action-key
+                         (format "No such action: %s" (name action-key)))
                        errors))]
     (binding [*parse-context* {:action-context action-context
                                :actions actions
@@ -283,8 +291,15 @@ Keys
 (defn- parse-multi [action-context actions arguments]
   (let [action-keys (action-keys action-context)
         action-key (keyword (first arguments))
-        action (get actions action-key)]
-    (parse-single action-context actions action action-key (rest arguments) false)))
+        action (get actions action-key)
+        {:keys [no-action-fn]} action-context]
+    (if (and (nil? action) no-action-fn)
+      (binding [*parse-context* {:action-context action-context
+                                 :actions actions
+                                 :argument arguments
+                                 :single-action-mode? false}]
+        (no-action-fn))
+      (parse-single action-context actions action action-key (rest arguments) false))))
 
 (defn- parse-global [action-context actions arguments]
   (let [{:keys [global-actions]} action-context]

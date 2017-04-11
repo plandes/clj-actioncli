@@ -4,25 +4,17 @@
   :license {:name "Apache License version 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"
             :distribution :repo}
-  :plugins [[lein-codox "0.10.3"]
+  :plugins [[lein-codox "0.10.1"]
             [lein-javadoc "0.3.0"]
             [org.clojars.cvillecsteele/lein-git-version "1.2.7"]]
   :codox {:metadata {:doc/format :markdown}
           :project {:name "Action CLI"}
-<<<<<<< HEAD
           :output-path "target/doc/codox"}
   :git-version {:root-ns "zensols.actioncli"
                 :path "src/clojure/zensols/actioncli"
                 :version-cmd "git describe --match v*.* --abbrev=4 --dirty=-dirty"}
-=======
-          :output-path "target/doc/codox"
-          :source-uri "https://github.com/plandes/clj-nlp-parse/blob/v{version}/{filepath}#L{line}"}
->>>>>>> merge
   :javadoc-opts {:package-names ["com.zensols.log"]
                  :output-dir "target/doc/apidocs"}
-  :git-version {:root-ns "zensols.actioncli"
-                :path "src/clojure/zensols/actioncli"
-                :version-cmd "git describe --match v*.* --abbrev=4 --dirty=-dirty"}
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
   :javac-options ["-Xlint:unchecked"]
@@ -41,7 +33,6 @@
                         [[org.apache.logging.log4j/log4j-core "2.7"]]}
              :snapshot {:git-version {:version-cmd "echo -snapshot"}}
              :appassem {:aot :all}
-             :snapshot {:git-version {:version-cmd "echo -snapshot"}}
              :dev
              {:jvm-opts ["-Dlog4j.configurationFile=test-resources/log4j2.xml" "-Xms4g" "-Xmx12g" "-XX:+UseConcMarkSweepGC"]
               :dependencies [[org.apache.logging.log4j/log4j-slf4j-impl "2.7"]

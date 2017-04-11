@@ -6,17 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [Unreleased]
-
-## [0.0.16]
-### Added
-- Print help for specific action with action context.
-- Parse options (vs only process) options.
-- Adding Travis build.
-
-### Changed
-- Move to lein-git-version 1.2.7.
-
-## [0.0.15] - 2017-01-30
 ### Added
 - Changelog
 - Accessible help function and featues (i.e. add usage etc).
@@ -24,7 +13,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Fixing help message printing.
 - Readme documentation up to date.
-
 
 ## [0.0.14] - 2017-01-27
 ### Changed
@@ -44,7 +32,5 @@ First major release.
 
 
 [Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...HEAD
-[0.0.16]: https://github.com/plandes/clj-actioncli/compare/v0.0.15...v0.0.16
-[0.0.15]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...v0.0.15
 [0.0.14]: https://github.com/plandes/clj-actioncli/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/plandes/clj-actioncli/compare/v0.0.12...v0.0.13

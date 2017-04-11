@@ -34,7 +34,6 @@ Additional documentation:
 # Usage
 
 This package supports:
-* [Templating](#templating)
 * [Action Commands](#action-commands)
 * [Resource Location](#resource-location)
 * [Executing Action Commands](#executing)
@@ -55,6 +54,17 @@ you want to start it with the command:
 $ java -jar serviceapp.jar service -p 8080
 ```
 
+An action command is a map with keys:
+
+* **:options** has a sequence
+  of [option definitions](https://github.com/clojure/tools.cli) that is given
+  to the `clojure.tools.cli` framework.
+* **:description** A long human readable description of the command that is
+  used in the help/usage.
+* **:app** A function that is called with the parsed options and left over
+  arguments as shown in the [example](src/com/example/service.clj) below.
+
+
 There are three kinds of action commands:
 
 * **Global action:** These are parsed first before anything else and usually
@@ -65,7 +75,6 @@ There are three kinds of action commands:
 * **Multi-action:** These include the an action name (think operand) at the
   beginning of the command line.  Examples include `git clone` where `clone` is
   the action name.
-
 
 Create the following files: service.clj and core.clj
 ### src/com/example/service.clj
@@ -184,17 +193,35 @@ user=> (.getPath (res/resource-path :runtime-gen))
 
 ## Building
 
+<<<<<<< HEAD
 All [leiningen](http://leiningen.org) tasks will work in this project.  For
 additional build functionality (git tag convenience utility functionality)
 clone the [Clojure build repo](https://github.com/plandes/clj-zenbuild) in the
 same (parent of this file) directory as this project:
+=======
+To build from source, do the folling:
+
+- Install [Leiningen](http://leiningen.org) (this is just a script)
+- Install [GNU make](https://www.gnu.org/software/make/)
+- Install [Git](https://git-scm.com)
+- Download the source: `git clone https://github.com/clj-actioncli && cd clj-actioncli`
+- Download the make include files:
+>>>>>>> merge
 ```bash
-   cd ..
-   git clone https://github.com/plandes/clj-zenbuild
+mkdir ../clj-zenbuild && wget -O - https://api.github.com/repos/plandes/clj-zenbuild/tarball | tar zxfv - -C ../clj-zenbuild --strip-components 1
 ```
+- Build the distribution binaries: `make dist`
+
+Note that you can also build a single jar file with all the dependencies with: `make uber`
+
 
 ## License
 
+<<<<<<< HEAD
+## License
+
+=======
+>>>>>>> merge
 Copyright © 2017 Paul Landes
 
 Apache License version 2.0

@@ -26,6 +26,10 @@ xresolution).
   * [Action Commands](#action-commands)
   * [Resource Location](#resource-location)
   * [Executing Action Commands](#executing)
+  * [Resource Location](#resource-location)
+* [Building](#building)
+* [Changelog](#changelog)
+* [License](#license)
 
 
 ## Obtaining

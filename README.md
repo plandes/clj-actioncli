@@ -17,27 +17,29 @@ package but useful for many others (i.e. file system path register and
 xresolution).
 
 
-# Obtaining
+## Contents
+
+* [Obtaining](#obtaining)
+* [Documentation](#documentation)
+* [Templating](#templating)
+* [Usage](#usage)
+  * [Action Commands](#action-commands)
+  * [Resource Location](#resource-location)
+  * [Executing Action Commands](#executing)
+
+
+## Obtaining
 
 In your `project.clj` file, add:
 
 [![Clojars Project](http://clojars.org/com.zensols.tools/actioncli/latest-version.svg)](http://clojars.org/com.zensols.tools/actioncli/)
 
 
-# Documentation
+## Documentation
 
 Additional documentation:
 * [Java](https://plandes.github.io/clj-actioncli/apidocs/index.html)
 * [Clojure](https://plandes.github.io/clj-actioncli/codox/index.html)
-
-
-# Usage
-
-This package supports:
-* [Templating](#templating)
-* [Action Commands](#action-commands)
-* [Resource Location](#resource-location)
-* [Executing Action Commands](#executing)
 
 
 ## Templating
@@ -47,7 +49,13 @@ with the [lein project](https://github.com/plandes/template/tree/master/lein)
 directory to template out the files in the following secion.
 
 
-## Action Commands
+## Usage
+
+This API provides not only an enhanced action based command line, but also
+several general purpose libraries.
+
+
+### Action Commands
 
 Say you're writing a web service (among other things an uberjar might have) and
 you want to start it with the command:
@@ -68,7 +76,7 @@ There are three kinds of action commands:
 
 
 Create the following files: service.clj and core.clj
-### src/com/example/service.clj
+#### src/com/example/service.clj
 ```clojure
 (ns com.example.service
   (:require [clojure.tools.logging :as log])
@@ -88,7 +96,7 @@ Create the following files: service.clj and core.clj
             (run-server (:port opts))))})
 ```
 
-### src/com/example/core.clj
+#### src/com/example/core.clj
 ```clojure
 (ns com.example.core
   (:require [zensols.actioncli.parse :as parse]
@@ -113,7 +121,7 @@ Create the following files: service.clj and core.clj
       (parse/process-arguments args)))
 ```
 
-### resources/service-log4j.xml
+#### resources/service-log4j.xml
 ```xml
 <configuration status="OFF">
     <appenders>
@@ -129,7 +137,8 @@ Create the following files: service.clj and core.clj
     </loggers>
 </configuration>
 ```
-## Executing
+
+### Executing
 ```bash
 $ java -jar target/clj-actioncli-example-0.1.0-SNAPSHOT-standalone.jar --help
 service	start the guide website and service
@@ -157,7 +166,9 @@ user=> (+ 1 1)
 2
 ```
 
-# Resource Location
+
+### Resource Location
+
 Many apps (command line) need to find paths on the file system.  This library
 provides a way to both register and refine those locations with Java system
 properties.
@@ -182,16 +193,28 @@ user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
 
+
 ## Building
 
-All [leiningen](http://leiningen.org) tasks will work in this project.  For
-additional build functionality (git tag convenience utility functionality)
-clone the [Clojure build repo](https://github.com/plandes/clj-zenbuild) in the
-same (parent of this file) directory as this project:
+To build from source, do the folling:
+
+- Install [Leiningen](http://leiningen.org) (this is just a script)
+- Install [GNU make](https://www.gnu.org/software/make/)
+- Install [Git](https://git-scm.com)
+- Download the source: `git clone https://github.com/clj-mkproj && cd clj-mkproj`
+- Download the make include files:
 ```bash
-   cd ..
-   git clone https://github.com/plandes/clj-zenbuild
+mkdir ../clj-zenbuild && wget -O - https://api.github.com/repos/plandes/clj-zenbuild/tarball | tar zxfv - -C ../clj-zenbuild --strip-components 1
 ```
+- Build the distribution binaries: `make dist`
+
+Note that you can also build a single jar file with all the dependencies with: `make uber`
+
+
+## Changelog
+
+An extensive changelog is available [here](CHANGELOG.md).
+
 
 ## License
 

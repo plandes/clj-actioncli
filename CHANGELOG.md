@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Changelog
 - Accessible help function and featues (i.e. add usage etc).
+- Travis build.
+- More configurable usage configuration.
+- Better CLI parsing error handing.
 
 ### Changed
 - Fixing help message printing.

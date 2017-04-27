@@ -6,16 +6,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [Unreleased]
+
+
+## [0.0.16] - 2017-04-27
+### Added
+- Better CLI parsing error handing.
+- Travis build.
+
+### Changed
+- Fix no help on startup.
+- Open access to reading CLI options.
+
+
+## [0.0.15] - 2017-01-30
 ### Added
 - Changelog
 - Accessible help function and featues (i.e. add usage etc).
-- Travis build.
 - More configurable usage configuration.
-- Better CLI parsing error handing.
 
 ### Changed
 - Fixing help message printing.
 - Readme documentation up to date.
+
 
 ## [0.0.14] - 2017-01-27
 ### Changed
@@ -34,6 +46,7 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.15...HEAD
+[0.0.15]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...v0.0.15
 [0.0.14]: https://github.com/plandes/clj-actioncli/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/plandes/clj-actioncli/compare/v0.0.12...v0.0.13

@@ -35,11 +35,15 @@
 
 (defn configure
   "Congigure the Log4j2 system with **res**, which can be anything usable
-  with [[clojure.java.io/input-stream]]."
+  with [[clojure.java.io/input-stream]].  If **res** is a string, interpret as
+  a resource."
   [res]
-  (with-open [in (io/input-stream res)]
-    (LogUtil/config in))
-  (log/debugf "configured with XML resource: %s" res))
+  (let [res (if (string? res)
+              (io/resource res)
+              res)]
+    (with-open [in (io/input-stream res)]
+      (LogUtil/config in))
+    (log/debugf "configured with XML resource: %s" res)))
 
 (defn log-level-set-option
   "Create an option that sets the Log4j2 level.  Note that all you need to do

@@ -88,7 +88,9 @@
 (defn- resolve-function [key apply?]
   (let [path-fn (get (deref *resource-paths*) key)]
     (if (nil? path-fn)
-      (throw (ex-info (format "No such resource: %s" key) {:key key})))
+      (-> (format "No such resource: %s" key)
+          (ex-info {:key key})
+          throw))
     (let [path-or-fn (path-fn)]
       (if (and apply? (function? path-or-fn))
         (path-or-fn)
@@ -106,7 +108,9 @@
    (let [parent (resolve-function key false)
          path (resolve-resource (cond (instance? File parent) :file
                                       (function? parent) :function
-                                      true :resource)
+                                      (instance? java.net.URL parent) :resource
+                                      (string? parent) :resource
+                                      true :constant)
                                 parent child-file)]
      (case create
        :file (.mkdirs path)
@@ -161,7 +165,9 @@
         _ (log/debugf "registering form: %s -> %s" key (pr-str fnform))
         ;; bind since calling from other *ns* fails the eval (i.e. requires)
         fval (binding [*ns* our-ns]
-               (eval (concat (list 'fn [] fnform))))]
+               (if function
+                 (constantly (first fnform))
+                 (eval (concat (list 'fn [] fnform)))))]
     (swap! *resource-paths* assoc key fval)
     (log/tracef "resource-path: %s -> %s" key (resource-path key))
     fval))

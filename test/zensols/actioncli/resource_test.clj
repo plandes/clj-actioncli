@@ -40,8 +40,7 @@
 
 (deftest test-prepath
   (init-sysprop)
-  (register-resource :data :system-file "data" :system-default "../data")
-  (register-resource :runtime-gen :pre-path :data :system-file "db")
+  (init-register)
   (is (not (nil? (resource-path :runtime-gen))))
   (is (instance? java.io.File (resource-path :runtime-gen)))
   (is (= "../data/db/dir2" (.getPath (resource-path :runtime-gen "dir2"))))
@@ -51,20 +50,17 @@
 (deftest test-func
   (init-sysprop)
   (register-resource :func-dir
-                     :type :any-old-key
-                     :function (fn [type-param]
-                                 (fn
-                                   ([] "/nofile")
-                                   ([file]
-                                    [type-param (str "/somepath/" file)]))))
-  (is (= "/nofile" (resource-path :func-dir)))
-  (is (= [:any-old-key "/somepath/pos"] (resource-path :func-dir "pos")))
+                     :function (fn afn
+                                 ([] (afn "nofile"))
+                                 ([file]
+                                  [:moredata (str "/somepath/" file)])))
+  (is (= [:moredata "/somepath/nofile"] (resource-path :func-dir)))
+  (is (= [:moredata "/somepath/pos"] (resource-path :func-dir "pos")))
   (register-resource :func-dir
-                     :function (fn [arg]
-                                 (fn
-                                   ([] (io/file "no-file-for-you"))
-                                   ([file]
-                                    (io/file "/another/path" file)))))
+                     :function (fn
+                                 ([] (io/file "no-file-for-you"))
+                                 ([file]
+                                  (io/file "/another/path" file))))
   (is (= (io/file "/another/path/pos") (resource-path :func-dir "pos")))
   (is (= (io/file "no-file-for-you") (resource-path :func-dir))))
 

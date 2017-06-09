@@ -55,7 +55,7 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.17...HEAD
 [0.0.17]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/plandes/clj-actioncli/compare/v0.0.15...v0.0.16
 [0.0.15]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...v0.0.15

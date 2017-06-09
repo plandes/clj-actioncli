@@ -33,6 +33,25 @@
    (log/debugf "new log level: %s" level-thing)
    (LogUtil/setAllLevel (to-level level-thing))))
 
+(defmacro with-log-level
+  "Set the the log level to **level-thing** (see [[change-log-level]]) for the
+  execution of **body**.
+
+  The **log-name** parameter is one of the following:
+
+  * the string package or namespace name of the logger (usual log name)
+  * `:ns` for the current namespace's logger"
+  {:style/indent 2}
+  [log-name level-thing & body]
+  `(let [lname# (if (= :ns ~log-name)
+                  (->> (ns-name *ns*) name)
+                  ~log-name)
+         old# (change-log-level lname# ~level-thing)]
+     (try
+       ~@body
+       (finally
+         (change-log-level lname# old#)))))
+
 (defn configure
   "Congigure the Log4j2 system with **res**, which can be anything usable
   with [[clojure.java.io/input-stream]].  If **res** is a string, interpret as

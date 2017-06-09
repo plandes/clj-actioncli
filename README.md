@@ -25,8 +25,9 @@ xresolution).
 * [Usage](#usage)
   * [Action Commands](#action-commands)
   * [Resource Location](#resource-location)
+  * [Resource Functions](#resource-function)
+  * [Resource Lexical Scope](#resource-lexical-scope)
   * [Executing Action Commands](#executing)
-  * [Resource Location](#resource-location)
 * [Building](#building)
 * [Changelog](#changelog)
 * [License](#license)
@@ -195,6 +196,36 @@ user=> (.getPath (res/resource-path :data))
 ../new-data-path
 user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
+```
+
+### Resource Functions
+
+You can also declare functions to resolve your resources.  If using
+`resource-path` with an argument (i.e. additional directory) the function is
+called with an argument.  Otherwise none is given and the 0-arg function form
+is called.  For example:
+
+```clojure
+(register-resource :func-dir
+                   :function (fn
+                               ([] (io/file "no-file-for-you"))
+                               ([file]
+                                 (io/file "/another/path" file))))
+(resource-path :func-dir "pos")
+=> #object[java.io.File 0x394b51a "/another/path/pos"]
+```
+
+### Resource Lexical Scope
+
+You can temporarily register and then call `resource-path` in a lexical scope
+using `with-resources` as in:
+
+```clojure
+(with-resources
+  (register-resource :data :system-file "../less-data")
+  (resource-path :runtime-gen))
+
+=> #object[java.io.File 0x1bbdf16d "../less-data/db"]
 ```
 
 

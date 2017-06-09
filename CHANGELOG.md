@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.17] - 2017-06-09
+### Added
+- Set log level on a per logger basis.
+- With/temporary lexical semantics register/resolve path functionality.
+
+### Changed
+- Function resource resolve bug fixes with more testing.
+
+
 ## [0.0.16] - 2017-04-27
 ### Added
 - Better CLI parsing error handing.
@@ -47,6 +56,7 @@ First major release.
 
 
 [Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...HEAD
+[0.0.17]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/plandes/clj-actioncli/compare/v0.0.15...v0.0.16
 [0.0.15]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...v0.0.15
 [0.0.14]: https://github.com/plandes/clj-actioncli/compare/v0.0.13...v0.0.14

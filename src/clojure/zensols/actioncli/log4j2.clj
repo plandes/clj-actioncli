@@ -58,7 +58,7 @@
   a resource."
   [res]
   (let [stream (cond (string? res) (io/input-stream (io/resource res))
-                     (instance? java.io.InputStream res)
+                     (instance? java.io.InputStream res) res
                      true (io/input-stream res))]
     (with-open [in stream]
       (LogUtil/config in))

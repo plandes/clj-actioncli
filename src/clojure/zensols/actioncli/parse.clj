@@ -34,6 +34,11 @@
   with [[multi-action-context]] or [[single-action-context]]"
   nil)
 
+(def ^:dynamic *include-program-in-errors*
+  "If non-nil add program name to error and warning messages
+  in [[handle-exception]] and [[error-message]] and [[print-error-message]]."
+  true)
+
 (defa- program-name-inst "prog")
 
 (defn program-name
@@ -217,18 +222,23 @@ Keys
 (defn handle-exception
   "Handle exceptions thrown from CLI actions."
   [e]
-  (log/debugf "handle exception: <%s>" e)
-  (let [msg (.getMessage e)]
+  (log/trace e "handle exception: %s" e)
+  (let [msg (.getMessage e)
+        prog-name (if *include-program-in-errors*
+                    (str (program-name) ": ")
+                    "")]
     (if *log-error* (log/error e "action line parse error"))
-    (if (instance? java.io.FileNotFoundException e)
-      (binding [*out* *err*]
-        (println (format "%sio error: %s" (program-fmt) msg)))
-      (binding [*out* *err*]
-        (println (format "%serror: %s"
-                         (program-fmt)
-                         (if ex-data
-                           (.getMessage e)
-                           (.toString e)))))))
+    (binding [*out* *err*]
+      (cond (instance? java.io.FileNotFoundException e)
+            (println (format "%sio error: %s" prog-name msg))
+            (instance? java.lang.NullPointerException e)
+            (println (format "%sio error: null pointer (%s)" prog-name msg))
+            true
+            (println (format "%serror: %s"
+                             prog-name
+                             (if ex-data
+                               (.getMessage e)
+                               (.toString e)))))))
   (log/debugf "dumping JVM: %s, rethrow: %s"
               *dump-jvm-on-error* *rethrow-error*)
   (if *dump-jvm-on-error*
@@ -251,7 +261,9 @@ Keys
   singleton then only print one in the common usage format."
   [errors]
   (if (= (count errors) 1)
-    (str (program-fmt) (first errors))
+    (str (if *include-program-in-errors*
+           (str (program-name) ": "))
+         (first errors))
     (str "The following errors occurred while parsing your action:\n\n"
          (s/join \newline errors))))
 

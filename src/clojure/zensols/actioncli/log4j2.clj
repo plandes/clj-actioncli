@@ -57,10 +57,10 @@
   with [[clojure.java.io/input-stream]].  If **res** is a string, interpret as
   a resource."
   [res]
-  (let [res (if (string? res)
-              (io/resource res)
-              res)]
-    (with-open [in (io/input-stream res)]
+  (let [stream (cond (string? res) (io/input-stream (io/resource res))
+                     (instance? java.io.InputStream res)
+                     true (io/input-stream res))]
+    (with-open [in stream]
       (LogUtil/config in))
     (log/debugf "configured with XML resource: %s" res)))
 

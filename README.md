@@ -14,23 +14,29 @@ passed at invocation time.
 
 This package has a few other basic utility libraries that is used by this
 package but useful for many others (i.e. file system path register and
-xresolution).
+resolution).
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+## Table of Contents
 
-## Contents
+- [Obtaining](#obtaining)
+- [Documentation](#documentation)
+- [Templating](#templating)
+- [Usage](#usage)
+    - [Action Commands](#action-commands)
+        - [src/com/example/service.clj](#srccomexampleserviceclj)
+        - [src/com/example/core.clj](#srccomexamplecoreclj)
+        - [resources/service-log4j.xml](#resourcesservice-log4jxml)
+    - [Executing](#executing)
+    - [Resource Location](#resource-location)
+    - [Resource Functions](#resource-functions)
+    - [Resource Lexical Scope](#resource-lexical-scope)
+    - [Timeout Block](#timeout-block)
+- [Building](#building)
+- [Changelog](#changelog)
+- [License](#license)
 
-* [Obtaining](#obtaining)
-* [Documentation](#documentation)
-* [Templating](#templating)
-* [Usage](#usage)
-  * [Action Commands](#action-commands)
-  * [Resource Location](#resource-location)
-  * [Resource Functions](#resource-function)
-  * [Resource Lexical Scope](#resource-lexical-scope)
-  * [Executing Action Commands](#executing)
-* [Building](#building)
-* [Changelog](#changelog)
-* [License](#license)
+<!-- markdown-toc end -->
 
 
 ## Obtaining
@@ -198,6 +204,7 @@ user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
 
+
 ### Resource Functions
 
 You can also declare functions to resolve your resources.  If using
@@ -215,6 +222,7 @@ is called.  For example:
 => #object[java.io.File 0x394b51a "/another/path/pos"]
 ```
 
+
 ### Resource Lexical Scope
 
 You can temporarily register and then call `resource-path` in a lexical scope
@@ -226,6 +234,22 @@ using `with-resources` as in:
   (resource-path :runtime-gen))
 
 => #object[java.io.File 0x1bbdf16d "../less-data/db"]
+```
+
+
+### Timeout Block
+
+There's a utility namespace that throws an exception if a lexical scope takes
+too long to process.  For example, the following will throw a
+`java.util.concurrent.TimeoutException`:
+
+```clojure
+(require '[zensols.actioncli.util :refer (with-timeout)])
+
+(with-timeout (* 1 1000)
+  (Thread/sleep (* 2 1000)))
+
+=> TimeoutException Execution timed out.  clojail.core/thunk-timeout (core.clj:41)
 ```
 
 

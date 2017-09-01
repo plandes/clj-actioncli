@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.18] - 2017-09-01
+### Added
+- Utility namespace with timeout functionality and string truncation brought
+  over from tools library.
+
+### Changed
+- Better log4j2 config resource handling.
+- Better CLI exception handling and configuration.
+
 
 ## [0.0.17] - 2017-06-09
 ### Added
@@ -55,7 +64,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.17...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.18...HEAD
+[0.0.18]: https://github.com/plandes/clj-actioncli/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/plandes/clj-actioncli/compare/v0.0.15...v0.0.16
 [0.0.15]: https://github.com/plandes/clj-actioncli/compare/v0.0.14...v0.0.15

@@ -3,8 +3,7 @@
     zensols.actioncli.parse
   (:require [clojure.string :as s]
             [clojure.tools.logging :as log]
-            [clojure.tools.cli :refer [parse-opts] :as cli])
-  (:require [zensols.actioncli.dynamic :refer (defa-)]))
+            [clojure.tools.cli :refer [parse-opts] :as cli]))
 
 (def ^:dynamic *dump-jvm-on-error*
   "Bind this from the REPL to avoid a system exit when testing the CLI."
@@ -39,7 +38,7 @@
   in [[handle-exception]] and [[error-message]] and [[print-error-message]]."
   true)
 
-(defa- program-name-inst "prog")
+(defonce ^:private program-name-inst (atom "prog"))
 
 (defn program-name
   "Return the program name used for info/error message.  This is set

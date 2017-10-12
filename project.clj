@@ -38,5 +38,5 @@
              :snapshot {:git-version {:version-cmd "echo -snapshot"}}
              :appassem {:aot :all}
              :test
-             {:jvm-opts ["-Dlog4j.configurationFile=test-resources/log4j2.xml"
+             {:jvm-opts ["-Dlog4j.configurationFile=test-resources/test-log4j2.xml"
                          "-Xms4g" "-Xmx12g" "-XX:+UseConcMarkSweepGC"]}})

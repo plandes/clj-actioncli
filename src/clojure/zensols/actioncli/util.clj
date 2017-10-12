@@ -32,31 +32,6 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
   {:style/indent 1}
   `(cj/thunk-timeout (fn [] ~@body) ~timeout-millis))
 
-(defmacro prime-resource-factory
-  "Create a function and name space resources that create a shared per/thread."
-  [name create-fn]
-  `(do
-     (def ^:private monitor# (Object.))
-     (def ^:private init-inst# (atom false))
-     (def ^:private ~name
-       {:init-inst init-inst#
-        :create-fn (fn [& create-args#]
-                     (let [res# (volatile! nil)
-                           res-name# ~name]
-                       (log/debugf "access resource: %s" res-name#)
-                       (locking monitor#
-                         (when-not (deref init-inst#)
-                           (log/debugf "start priming: %s" res-name#)
-                           (vreset! res# (apply ~create-fn create-args#))
-                           (reset! init-inst# true)
-                           (log/debug "end prime")))
-                       (if (deref res#)
-                         (do (log/debug "reusing prime result")
-                             (deref res#))
-                         (do (log/debug "no prime result, calling now")
-                             (apply ~create-fn create-args#)))))})))
-
-
 (defn parse-macro-arguments [arg-list]
   (let [args (java.util.LinkedList. arg-list)
         mres (transient {})]

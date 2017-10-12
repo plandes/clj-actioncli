@@ -71,7 +71,7 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
     (assoc! mres :forms (into [] args))
     (persistent! mres)))
 
-(defmacro def-prime
+(defmacro defnprime
   "Just like `defn` but call **body** in a [[clojure.core/locking]] lexical
   context to make this first call and resource creation thread-safe.
   Subsequent calls only use the monitor to check if the resource has **body**
@@ -104,7 +104,7 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
        (var ~name))))
 
-(defmacro def-lockres
+(defmacro defnlock
   "Just like `defn` but create an atom instance used to generate the result
   (resource) by calling **body** only once.
 
@@ -127,12 +127,12 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
                (log/debugf "creating resource: %s" res-name#)
                (swap! init-inst#
                       #(or % (do ~@forms)))
-               (log/debug "create resource")))
+               (log/debug "created resource")))
            (deref init-inst#)))
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
        (var ~name))))
 
-(doseq [var-fn [#'def-prime #'def-lockres]]
+(doseq [var-fn [#'defnprime #'defnlock]]
   (alter-meta! var-fn assoc
                :arglists '([attr-map? name doc-string? [params*] body]
                            [name doc-string? [params*] body]

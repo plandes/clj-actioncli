@@ -23,7 +23,7 @@
             :forms '[(do (println "hi"))]}
            (parse-macro-arguments ["doc" [1 2] '(do (println "hi"))])))))
 
-(def-prime ^{:foo :bar} test-prime-func
+(defnprime ^{:foo :bar} test-prime-func
   "Test prime function"
   [a b]
   (+ a b))
@@ -40,7 +40,7 @@
     (is (true? (-> (meta #'test-prime-func) :init-resource deref)))
     (is (= 4 (test-prime-func 1 3)))))
 
-(def-lockres ^{:foo :bar} test-lock-func
+(defnlock ^{:foo :bar} test-lock-func
   "Test lock function"
   [a b]
   (+ a b))

@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [Unreleased]
+### Removed
+- All `defonce` obviated `def*` (i.e. `defa` macros).
+
+### Added
+- Thread resource creation protection functions.
+
 
 ## [0.0.18] - 2017-09-01
 ### Added

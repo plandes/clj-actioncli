@@ -7,8 +7,6 @@ all:		info
 
 include $(ZBHOME)/src/mk/compile.mk
 
-# checkdep creates clojure compiled files creating a file:/.../clojure failing
-# the resource test
 .PHONY: test
 test:	clean
 	lein test

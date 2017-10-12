@@ -20,7 +20,13 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 public final class LogUtil {
     private void LogUtil() {}
 
-    /** Override the logging level of a given logger */
+    /**
+     * Override the logging level of a given logger.
+     *
+     * @param logName the name of the logger for which to set the level
+     * @param level the new level to set on the logger
+     * @return the <tt>Level</tt> instance modified
+     */
     public static Level setLevel(String logName, Level level) {
 	LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
 	Configuration conf = ctx.getConfiguration();
@@ -31,7 +37,11 @@ public final class LogUtil {
 	return oldLevel;
     }
 
-    /** Reset the level for all loggers, including the root logger. */
+    /**
+     * Reset the level for all loggers, including the root logger.
+     *
+     * @param level the new level to set on all loggers
+     */
     public static void setAllLevel(Level level) {
 	LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
 	Configuration conf = ctx.getConfiguration();
@@ -46,7 +56,13 @@ public final class LogUtil {
 	ctx.updateLoggers(conf);
     }
 
-    /** Configure the system with the XML contents from the input stream. */
+    /**
+     * Configure the system with the XML contents from the input stream.
+     *
+     * @param in the input stream that contains the configuration data to set
+     * on the logging system
+     * @throws IOException if <tt>in</tt> couldn't be read
+     */
     public static void config(InputStream in) throws IOException {
 	ConfigurationSource source = new ConfigurationSource(in);
 	Configurator.initialize(null, source);

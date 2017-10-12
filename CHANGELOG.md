@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Thread resource creation protection functions.
 
+### Changed
+- Fix Javadoc warnings.
+
 
 ## [0.0.18] - 2017-09-01
 ### Added

@@ -61,7 +61,7 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
   (let [args (java.util.LinkedList. arg-list)
         mres (transient {})]
     (if (and (.peek args)
-             (= (type (.peek args))) java.lang.String)
+             (= (type (.peek args)) java.lang.String))
       (assoc! mres :doc (.pop args)))
     (if (empty? args)
       (-> (format "Missing [params*] argument list: %s" arg-list)
@@ -82,12 +82,10 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
 
   The result it saves is kept in the metadata under key `:init-resource`."
   [name & args]
-  (let [init-inst (atom nil)
-        {:keys [doc args forms]} (parse-macro-arguments args)]
-    `(do
-       (def ^:private monitor# (Object.))
-       (def ^:private init-inst# ~init-inst)
-       (defn ~(vary-meta name assoc :init-resource init-inst :doc doc) ~args
+  (let [{:keys [doc args forms]} (parse-macro-arguments args)]
+    `(let [init-inst# (atom nil)
+           monitor# (Object.)]
+       (defn ~(vary-meta name assoc :doc doc) ~args
          (letfn [(create-fn# ~args
                    (do ~@forms))]
            (let [res# (volatile! nil)]
@@ -102,7 +100,9 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
                (do (log/debug "reusing prime result")
                    (deref res#))
                (do (log/debug "no prime result, calling now")
-                   (apply create-fn# ~args)))))))))
+                   (apply create-fn# ~args))))))
+       (alter-meta! (var ~name) assoc :init-resource init-inst#)
+       (var ~name))))
 
 (defmacro def-lockres
   "Just like `defn` but create an atom instance used to generate the result
@@ -115,22 +115,22 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
 
   The result it saves is kept in the metadata under key `:init-resource`."
   [name & args]
-  (let [init-inst (atom nil)
-        {:keys [doc args forms]} (parse-macro-arguments args)]
-    `(do
-       (def ^:private monitor# (Object.))
-       (def ^:private init-inst# ~init-inst)
-       (defn ~(vary-meta name assoc :init-resource init-inst :doc doc) ~args
+  (let [{:keys [doc args forms]} (parse-macro-arguments args)]
+    `(let [init-inst# (atom nil)
+           monitor# (Object.)]
+       (defn ~(vary-meta name assoc :doc doc) ~args
          (let [res# (volatile! nil)
                res-name# ~name]
            (log/debugf "fetching resource: %s" res-name#)
-           (locking monitor#
+           (locking init-inst#
              (when-not (deref init-inst#)
                (log/debugf "creating resource: %s" res-name#)
                (swap! init-inst#
                       #(or % (do ~@forms)))
                (log/debug "create resource")))
-           (deref init-inst#))))))
+           (deref init-inst#)))
+       (alter-meta! (var ~name) assoc :init-resource init-inst#)
+       (var ~name))))
 
 (doseq [var-fn [#'def-prime #'def-lockres]]
   (alter-meta! var-fn assoc

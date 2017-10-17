@@ -229,8 +229,11 @@ Keys
   * [[*rethrow-error*]]
   * [[*log-error*]]"
   [e]
-  (log/debugf "handle exception: <%s>" e)
-  (let [msg (.getMessage e)]
+  (log/trace e "handle exception: %s" e)
+  (let [msg (.getMessage e)
+        prog-name (if *include-program-in-errors*
+                    (str (program-name) ": ")
+                    "")]
     (if *log-error* (log/error e "action line parse error"))
     (binding [*out* *err*]
       (if (instance? java.io.FileNotFoundException e)
@@ -262,7 +265,9 @@ Keys
   singleton then only print one in the common usage format."
   [errors]
   (if (= (count errors) 1)
-    (str (program-fmt) (first errors))
+    (str (if *include-program-in-errors*
+           (str (program-name) ": "))
+         (first errors))
     (str "The following errors occurred while parsing your action:\n\n"
          (s/join \newline errors))))
 

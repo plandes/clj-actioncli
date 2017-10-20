@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.0.21] - 2017-10-20
 ### Changed
-- Fixed program error reporting format.
+- Fixed CLI program error reporting format.
 
 
 ## [0.0.20] - 2017-10-17

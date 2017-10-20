@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.21] - 2017-10-20
+### Changed
+- Fixed program error reporting format.
+
+
 ## [0.0.20] - 2017-10-17
 ### Removed
 - All `defonce` obviated `def*` (i.e. `defa` macros).
@@ -75,7 +80,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.20...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.21...HEAD
+[0.0.21]: https://github.com/plandes/clj-actioncli/compare/v0.0.19...v0.0.21
 [0.0.20]: https://github.com/plandes/clj-actioncli/compare/v0.0.18...v0.0.20
 [0.0.18]: https://github.com/plandes/clj-actioncli/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/plandes/clj-actioncli/compare/v0.0.16...v0.0.17

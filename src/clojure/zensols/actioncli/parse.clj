@@ -47,12 +47,9 @@
   @program-name-inst)
 
 (defn- program-fmt []
-  (let [name (if *include-program-in-errors*
-               (str (program-name) ": ")
-               "")]
-    (if name
-      (str name ": ")
-      "")))
+  (if *include-program-in-errors*
+    (str (program-name) ": ")
+    ""))
 
 (defn set-program-name
   "Set the program name used for info/error message."
@@ -230,10 +227,7 @@ Keys
   * [[*log-error*]]"
   [e]
   (log/trace e "handle exception: %s" e)
-  (let [msg (.getMessage e)
-        prog-name (if *include-program-in-errors*
-                    (str (program-name) ": ")
-                    "")]
+  (let [msg (.getMessage e)]
     (if *log-error* (log/error e "action line parse error"))
     (binding [*out* *err*]
       (if (instance? java.io.FileNotFoundException e)

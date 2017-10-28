@@ -110,19 +110,21 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
 (defmacro defnpool
   "Create a function called **name** that pools objects.  The pool resources
   are bound to **item-symbol** and created with function **factory-fn**.  The
-  **config** parameter determines how pooling is done with the following default configuration:
+  **config** parameter determines how pooling is done with the following
+  default configuration:
 
   ```
   {:max-total -1
    :max-idle 8
    :min-idle 0}
   ```
+  *Note:* The configuration form is optional.
 
   ## Example
   ```
   (defnpool pool1 [pooled-item
-                   {:max-total 5}
-                   #(java.util.Date.)]
+                   #(java.util.Date.)
+                   {:max-total 5}]
     [arg1]
     (str pooled-item arg1))
   ```
@@ -133,19 +135,20 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
 
   See the underlying [Java API](https://commons.apache.org/proper/commons-pool/apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html#setConfig-org.apache.commons.pool2.impl.GenericObjectPoolConfig)
   for more information."
-  [name [item-symbol config factory-fn] & args]
+  [name [item-symbol factory-fn & config] & args]
   (let [{:keys [doc args forms]} (parse-macro-arguments args)]
     `(let [conf# (merge {:max-total -1
                          :max-idle 8
                          :min-idle 0}
-                        ~config)
+                        ~(first config))
            pool-inst#
            (doto (p/get-pool ~factory-fn)
              (.setConfig (doto (GenericObjectPoolConfig.)
                            (.setMaxTotal (:max-total conf#))
                            (.setMaxIdle (:max-idle conf#))
                            (.setMinIdle (:min-idle conf#)))))]
-       (log/debugf "using config: %s" (pr-str conf#))
+       (log/debugf "using config: %s, fn factory: %s"
+                   (pr-str conf#) ~factory-fn)
        (defn ~(vary-meta name assoc :doc doc) ~args
          (log/debugf "borrow: %s" (trunc pool-inst#))
          (let [~item-symbol (p/borrow pool-inst#)]
@@ -175,6 +178,6 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
 
 (doseq [var-fn [#'defnpool]]
   (alter-meta! var-fn assoc
-               :arglists '([attr-map? name [symbol config factory-fn] doc-string? [params*] body]
+               :arglists '([attr-map? name [symbol factory-fn config?] doc-string? [params*] body]
                            [name [symbol config factory-fn] doc-string? [params*] body]
                            [name [symbol config factory-fn] [params*] body])))

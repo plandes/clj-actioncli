@@ -88,11 +88,11 @@
 (def ^:private pool-res-inst (atom nil))
 
 (defnpool pool1 [item
+                 #(swap! pool-res-inst inc)
                  {:max-total 5
                   ;:max-idle 100
                   ;:min-idle 10
-                  }
-                 #(swap! pool-res-inst inc)]
+                  }]
   [arg1]
   (+ 1 item))
 
@@ -105,3 +105,20 @@
                   (filter #(> % 6))
                   count)))))
 
+(def ^:private pool-res-inst2 (atom 0))
+
+(defnpool pool2
+  [item
+   #(swap! pool-res-inst2 inc)]
+  [arg1]
+  (+ 1 item))
+
+(deftest test-pool-locking []
+  (testing "test pooling with default config"
+    (reset! pool-res-inst2 0)
+    (let [limit 1000]
+      (is (> limit
+             (->> (range limit)
+                  (map #(future (pool2 %)))
+                  (map deref)
+                  (apply max)))))))

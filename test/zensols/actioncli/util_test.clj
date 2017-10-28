@@ -1,5 +1,6 @@
 (ns zensols.actioncli.util-test
-  (:require [clojure.test :refer :all])
+  (:require [clojure.test :refer :all]
+            [clojure.tools.logging :as log])
   (:require [clojure.java.io :as io]
             [clojure.string :as s])
   (:require [zensols.actioncli.util :refer :all]))
@@ -31,7 +32,7 @@
 (deftest test-prime
   (testing "prime resource"
     (is (= clojure.lang.Atom (type (:init-resource (meta #'test-prime-func)))))
-    (is (= nil (deref (:init-resource (meta #'test-prime-func)))))
+    (is (= false (deref (:init-resource (meta #'test-prime-func)))))
     (is (= :bar (:foo (meta #'test-prime-func))))
     (is (= "Test prime function" (:doc (meta #'test-prime-func))))
     (is (or (-> (meta #'test-prime-func) :init-resource (reset! nil)) true))
@@ -56,3 +57,51 @@
     (is (= 3 (test-lock-func 1 3)))
     (is (or (-> (meta #'test-lock-func) :init-resource (reset! nil)) true))
     (is (= 4 (test-lock-func 1 3)))))
+
+(defnprime prime1 [o]
+  o)
+
+(deftest test-prime-thread
+  (testing "prime thread"
+    (let [input (set (range 99999))]
+      (is (= input (->> input
+                        (map (fn [i]
+                               (future (prime1 i))))
+                        (map deref)
+                        set))))))
+
+(defnlock lock1 [o]
+  o)
+
+(deftest test-lock-thread
+  (testing "lock thread"
+    (let [input (range 99999)
+          res (->> input
+                   (map (fn [i]
+                          (future (lock1 i))))
+                   (map deref)
+                   distinct)]
+      (is (= (count res) 1))
+      (is (= (first res)
+             (->> (meta #'lock1) :init-resource deref))))))
+
+(def ^:private pool-res-inst (atom nil))
+
+(defnpool pool1 [item
+                 {:max-total 5
+                  ;:max-idle 100
+                  ;:min-idle 10
+                  }
+                 #(swap! pool-res-inst inc)]
+  [arg1]
+  (+ 1 item))
+
+(deftest test-pool-locking []
+  (testing "test pooling"
+    (reset! pool-res-inst 0)
+    (is (= 0 (->> (range 200)
+                  (map #(future (pool1 %)))
+                  (map deref)
+                  (filter #(> % 6))
+                  count)))))
+

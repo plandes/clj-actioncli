@@ -1,8 +1,10 @@
 (ns ^{:doc "Utility functions"
       :author "Paul Landes"}
     zensols.actioncli.util
+  (:import [org.apache.commons.pool2.impl GenericObjectPoolConfig])
   (:require [clojure.tools.logging :as log])
-  (:require [clojail.core :as cj]))
+  (:require [clojail.core :as cj])
+  (:require [pool.core :as p]))
 
 ;; duplicated from zensols.tools.string since its bloated with excel deps
 (def ^:dynamic *trunc-len*
@@ -58,7 +60,7 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
   The result it saves is kept in the metadata under key `:init-resource`."
   [name & args]
   (let [{:keys [doc args forms]} (parse-macro-arguments args)]
-    `(let [init-inst# (atom nil)
+    `(let [init-inst# (atom false)
            monitor# (Object.)]
        (defn ~(vary-meta name assoc :doc doc) ~args
          (letfn [(create-fn# ~args
@@ -71,9 +73,9 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
                  (vreset! res# (apply create-fn# ~args))
                  (reset! init-inst# true)
                  (log/debug "end prime")))
-             (if (deref res#)
+             (if-let [res2# (deref res#)]
                (do (log/debug "reusing prime result")
-                   (deref res#))
+                   res2#)
                (do (log/debug "no prime result, calling now")
                    (apply create-fn# ~args))))))
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
@@ -94,21 +96,85 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
     `(let [init-inst# (atom nil)
            monitor# (Object.)]
        (defn ~(vary-meta name assoc :doc doc) ~args
-         (let [res# (volatile! nil)
-               res-name# ~name]
+         (let [res-name# ~name]
            (log/debugf "fetching resource: %s" res-name#)
-           (locking init-inst#
+           (locking monitor#
              (when-not (deref init-inst#)
                (log/debugf "creating resource: %s" res-name#)
-               (swap! init-inst#
-                      #(or % (do ~@forms)))
-               (log/debug "created resource")))
-           (deref init-inst#)))
+               (swap! init-inst# #(or % (do ~@forms)))
+               (log/debug "created resource"))
+             (deref init-inst#))))
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
        (var ~name))))
+
+(defmacro defnpool
+  "Create a function called **name** that pools objects.  The pool resources
+  are bound to **item-symbol** and created with function **factory-fn**.  The
+  **config** parameter determines how pooling is done with the following default configuration:
+
+  ```
+  {:max-total -1
+   :max-idle 8
+   :min-idle 0}
+  ```
+
+  ## Example
+  ```
+  (defnpool pool1 [pooled-item
+                   {:max-total 5}
+                   #(java.util.Date.)]
+    [arg1]
+    (str pooled-item arg1))
+  ```
+
+  Creates a function `pool` that takes one argument (`arg`), binds pooled items
+  to `pool-item` with new instances of `java.util.Date` and has a max pool size
+  of 5.  The output appends the date to the passed argument.
+
+  See the underlying [Java API](https://commons.apache.org/proper/commons-pool/apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html#setConfig-org.apache.commons.pool2.impl.GenericObjectPoolConfig)
+  for more information."
+  [name [item-symbol config factory-fn] & args]
+  (let [{:keys [doc args forms]} (parse-macro-arguments args)]
+    `(let [conf# (merge {:max-total -1
+                         :max-idle 8
+                         :min-idle 0}
+                        ~config)
+           pool-inst#
+           (doto (p/get-pool ~factory-fn)
+             (.setConfig (doto (GenericObjectPoolConfig.)
+                           (.setMaxTotal (:max-total conf#))
+                           (.setMaxIdle (:max-idle conf#))
+                           (.setMinIdle (:min-idle conf#)))))]
+       (log/debugf "using config: %s" (pr-str conf#))
+       (defn ~(vary-meta name assoc :doc doc) ~args
+         (log/debugf "borrow: %s" (trunc pool-inst#))
+         (let [~item-symbol (p/borrow pool-inst#)]
+           (try
+             ~@forms
+             (finally
+               (log/debugf "return %s" (trunc pool-inst#))
+               (p/return pool-inst# ~item-symbol)))))
+       (alter-meta! (var ~name) assoc :pool-inst pool-inst#)
+       (var ~name))))
+
+(defn pool-item-status
+  "Return statistics on the **pool-fn-var**.  A var (not a symbole) needs to be
+  passed, which look something like `'#my-pol-fn` for **pool-fn-var**."
+  [pool-fn-var]
+  (let [pool (->> pool-fn-var meta :pool-inst)]
+    ;;.listAllObjects
+    {:active (.getNumActive pool)
+     :waiters (.getNumWaiters pool)
+     :idle (.getNumIdle pool)}))
 
 (doseq [var-fn [#'defnprime #'defnlock]]
   (alter-meta! var-fn assoc
                :arglists '([attr-map? name doc-string? [params*] body]
                            [name doc-string? [params*] body]
                            [name [params*] body])))
+
+(doseq [var-fn [#'defnpool]]
+  (alter-meta! var-fn assoc
+               :arglists '([attr-map? name [symbol config factory-fn] doc-string? [params*] body]
+                           [name [symbol config factory-fn] doc-string? [params*] body]
+                           [name [symbol config factory-fn] [params*] body])))

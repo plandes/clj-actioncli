@@ -31,6 +31,9 @@
                  ;; logging
                  [org.clojure/tools.logging "0.3.1"]
 
+                 ;; expensive object caching
+                 [pool "0.2.1"]
+
                  ;; sandboxing - timeout
                  [clojail "1.0.6"]]
   :profiles {:provided

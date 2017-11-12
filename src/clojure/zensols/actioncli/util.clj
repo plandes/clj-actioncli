@@ -66,17 +66,17 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
          (letfn [(create-fn# ~args
                    (do ~@forms))]
            (let [res# (volatile! nil)]
-             (log/debugf "access resource: %s" ~name)
+             (log/tracef "access resource: %s" ~name)
              (locking monitor#
                (when-not (deref init-inst#)
-                 (log/debugf "start priming: %s" ~name)
+                 (log/tracef "start priming: %s" ~name)
                  (vreset! res# (apply create-fn# ~args))
                  (reset! init-inst# true)
-                 (log/debug "end prime")))
+                 (log/trace "end prime")))
              (if-let [res2# (deref res#)]
-               (do (log/debug "reusing prime result")
+               (do (log/trace "reusing prime result")
                    res2#)
-               (do (log/debug "no prime result, calling now")
+               (do (log/trace "no prime result, calling now")
                    (apply create-fn# ~args))))))
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
        (var ~name))))
@@ -97,12 +97,12 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
            monitor# (Object.)]
        (defn ~(vary-meta name assoc :doc doc) ~args
          (let [res-name# ~name]
-           (log/debugf "fetching resource: %s" res-name#)
+           (log/tracef "fetching resource: %s" res-name#)
            (locking monitor#
              (when-not (deref init-inst#)
-               (log/debugf "creating resource: %s" res-name#)
+               (log/tracef "creating resource: %s" res-name#)
                (swap! init-inst# #(or % (do ~@forms)))
-               (log/debug "created resource"))
+               (log/trace "created resource"))
              (deref init-inst#))))
        (alter-meta! (var ~name) assoc :init-resource init-inst#)
        (var ~name))))
@@ -147,15 +147,15 @@ If the execution times out `java.util.concurrent.TimeoutException` is thrown."
                            (.setMaxTotal (:max-total conf#))
                            (.setMaxIdle (:max-idle conf#))
                            (.setMinIdle (:min-idle conf#)))))]
-       (log/debugf "using config: %s, fn factory: %s"
+       (log/tracef "using config: %s, fn factory: %s"
                    (pr-str conf#) ~factory-fn)
        (defn ~(vary-meta name assoc :doc doc) ~args
-         (log/debugf "borrow: %s" (trunc pool-inst#))
+         (log/tracef "borrow: %s" (trunc pool-inst#))
          (let [~item-symbol (p/borrow pool-inst#)]
            (try
              ~@forms
              (finally
-               (log/debugf "return %s" (trunc pool-inst#))
+               (log/tracef "return %s" (trunc pool-inst#))
                (p/return pool-inst# ~item-symbol)))))
        (alter-meta! (var ~name) assoc :pool-inst pool-inst#)
        (var ~name))))

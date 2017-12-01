@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.23] - 2017-12-01
+### Added
+- Added namespace macros from old Clojure Contrib library.
+
+
 ## [0.0.22] - 2017-10-27
 ### Changed
 - Bug fixes to prime and locking macros.
@@ -89,7 +94,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.21...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...HEAD
+[0.0.23]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.22
 [0.0.22]: https://github.com/plandes/clj-actioncli/compare/v0.0.22...v0.0.21
 [0.0.21]: https://github.com/plandes/clj-actioncli/compare/v0.0.20...v0.0.21
 [0.0.20]: https://github.com/plandes/clj-actioncli/compare/v0.0.18...v0.0.20

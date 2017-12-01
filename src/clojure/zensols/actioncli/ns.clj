@@ -1,6 +1,6 @@
 (ns ^{:doc "Useful namespace macros.
 
-Namespace macros taken from
+Some macros taken from
 [clojure/clojure-contrib](https://clojure.github.io/clojure-contrib/with-ns-api.html)."}
     zensols.actioncli.ns)
 
@@ -17,12 +17,12 @@ Namespace macros taken from
   removed.  The temporary namespace will 'refer' clojure.core."
   [& body]
   `(try
-    (create-ns 'sym#)
-    (let [result# (with-other-ns 'sym#
-                    (clojure.core/refer-clojure)
-                    ~@body)]
-      result#)
-    (finally (remove-ns 'sym#))))
+     (create-ns 'sym#)
+     (let [result# (with-other-ns 'sym#
+                     (clojure.core/refer-clojure)
+                     ~@body)]
+       result#)
+     (finally (remove-ns 'sym#))))
 
 (defmacro with-ns
   "Just like [[with-temp-ns]] but allows an [[clojure.core/ns]]
@@ -31,17 +31,57 @@ Namespace macros taken from
   ## Example
 
   ```
-  (with-declare-ns
+  (with-ns
     [(:require [clojure.string :as s])]
     (s/capitalize \"here\"))
-  ```"
+  ```
+
+  See [[clojure.core/ns]]."
   {:style/indent 1}
   [ns-args & body]
   `(try
-    (create-ns 'sym#)
-    (let [result# (with-other-ns 'sym#
-                    (clojure.core/refer-clojure)
-                    (ns sym# ~@ns-args)
-                    ~@body)]
-      result#)
-    (finally (remove-ns 'sym#))))
+     (create-ns 'sym#)
+     (let [result# (with-other-ns 'sym#
+                     (clojure.core/refer-clojure)
+                     (ns sym# ~@ns-args)
+                     ~@body)]
+       result#)
+     (finally (remove-ns 'sym#))))
+
+(alter-meta! #'with-ns assoc
+             :arglists '([[attr-map? references*] exprs*]))
+
+(defmacro with-context-ns
+  "Just like [[with-ns]] but brings in a context into the temporary namespace.
+
+  The **var** parameter is the variable to pass to the temporary namespace.
+
+  ## Example
+
+  ```
+  (let [abind 'someval]
+    (with-context-ns
+        abind
+        [(:require [clojure.string :as s])]
+      (s/capitalize (str (name abind)))))
+  ```
+
+  See [[clojure.core/ns]]."
+  {:style/indent 2}
+  [var ns-args & body]
+  `(try
+     (create-ns 'sym#)
+     (-> (with-other-ns 'sym#
+           (def vns# (atom nil))
+           vns#)
+         (reset! ~var))
+     (let [result# (with-other-ns 'sym#
+                     (clojure.core/refer-clojure)
+                     (ns sym# ~@ns-args)
+                     (let [~var (deref vns#)]
+                       ~@body))]
+       result#)
+     (finally (remove-ns 'sym#))))
+
+(alter-meta! #'with-context-ns assoc
+             :arglists '([var [attr-map? references*] exprs*]))

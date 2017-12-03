@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.24] - 2017-12-03
+### Changed
+- Fixed default arguments not being applied.
+
+
 ## [0.0.23] - 2017-12-01
 ### Added
 - Added namespace macros from old Clojure Contrib library.

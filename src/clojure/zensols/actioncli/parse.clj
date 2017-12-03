@@ -171,11 +171,12 @@ Keys
   [actions &
    {:keys [global-actions help-option version-option
            action-print-order print-help-fn usage-format-fn
-           no-action-fn]
+           no-action-fn default-arguments]
     :or {help-option (help-option)
          no-action-fn (fn [] (println (help-message)))}}]
   (merge (if action-print-order {:action-print-order action-print-order})
          (if print-help-fn {:print-help-fn print-help-fn})
+         (if default-arguments {:default-arguments default-arguments})
          {:usage-format-fn (or usage-format-fn (create-default-usage-format))}
          {:action-definitions actions
           :global-actions (concat global-actions

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Move IO utility library from `clj-ml-model`.
+
+### Changed
+- Use zenbuild as submodule.
+
 
 ## [0.0.24] - 2017-12-03
 ### Changed

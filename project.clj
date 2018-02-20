@@ -31,6 +31,9 @@
                  ;; logging
                  [org.clojure/tools.logging "0.3.1"]
 
+                 ;; serialization
+                 [com.taoensso/nippy "2.14.0"]
+
                  ;; expensive object caching
                  [pool "0.2.1"]
 

@@ -2,6 +2,6 @@ language: clojure
 lein: 2.7.1
 before_script:
   - mkdir -p target
-script: ZBHOME=zenbuild make checkdep test
+script: make checkdep test
 jdk:
   - oraclejdk8

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.0.25] - 2018-02-21
+
 ### Added
 - Move IO utility library from `clj-ml-model`.
 

@@ -49,8 +49,8 @@ In your `project.clj` file, add:
 ## Documentation
 
 API documentation:
-* [Java](https://plandes.github.io/clj-actioncli/apidocs/index.html)
 * [Clojure](https://plandes.github.io/clj-actioncli/codox/index.html)
+* [Java](https://plandes.github.io/clj-actioncli/apidocs/index.html)
 
 
 ## Templating

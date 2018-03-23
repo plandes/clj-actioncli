@@ -104,7 +104,7 @@
 
   * **:create** if `:file` then create the director(ies) on the
   file system, otherwise if `:dir` then create all parent directories"
-  ([key child-file & {:keys [create] :or {:create nil}}]
+  ([key child-file & {:keys [create] :or {create nil}}]
    (let [parent (resolve-function key false)
          path (resolve-resource (cond (instance? File parent) :file
                                       (function? parent) :function

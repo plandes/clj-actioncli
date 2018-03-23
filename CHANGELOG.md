@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Add 1.9 profile and fix tests for 1.9.
+
+
 ## [0.0.25] - 2018-02-21
 
 ### Added
@@ -108,8 +112,9 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...HEAD
-[0.0.23]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.22
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...HEAD
+[0.0.24]: https://github.com/plandes/clj-actioncli/compare/v0.0.24...v0.0.25
+[0.0.23]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.24
 [0.0.22]: https://github.com/plandes/clj-actioncli/compare/v0.0.22...v0.0.21
 [0.0.21]: https://github.com/plandes/clj-actioncli/compare/v0.0.20...v0.0.21
 [0.0.20]: https://github.com/plandes/clj-actioncli/compare/v0.0.18...v0.0.20

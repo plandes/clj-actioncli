@@ -28,12 +28,10 @@
   (init-sysprop)
   (register-resource :root-pkg :constant "clojure" :type :resource)
   (is (not (nil? (resource-path :root-pkg))))
-  (is (s/starts-with? (.toString (resource-path :root-pkg)) "jar:file:"))
-  (is (s/ends-with? (.toString (resource-path :root-pkg))
-                    "org/clojure/clojure/1.8.0/clojure-1.8.0.jar!/clojure"))
-  (is (s/starts-with? (.toString (resource-path :root-pkg "string.clj")) "jar:file:"))
-  (is (s/ends-with? (.toString (resource-path :root-pkg "string.clj"))
-                    "org/clojure/clojure/1.8.0/clojure-1.8.0.jar!/clojure/string.clj"))
+  (is (re-matches #"^jar:file:.*org/clojure/clojure/[0-9A-Z-.]+/clojure-[0-9A-Z-.]+.jar!/clojure"
+                  (.toString (resource-path :root-pkg))))
+  (is (re-matches #"^jar:file:.*org/clojure/clojure/[0-9A-Z-.]+/clojure-[0-9A-Z-.]+.jar!/clojure/string.clj"
+                  (.toString (resource-path :root-pkg "string.clj"))))
   (is (let [content (with-open [reader (io/reader (resource-path :root-pkg "string.clj"))]
                       (slurp reader))]
         (> (count content) 100))))

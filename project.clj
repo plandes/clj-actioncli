@@ -39,7 +39,8 @@
 
                  ;; sandboxing - timeout
                  [clojail "1.0.6"]]
-  :profiles {:provided
+  :profiles {:1.9 {:dependencies [[org.clojure/clojure "1.9.0-RC2"]]}
+             :provided
              {:dependencies [[org.apache.logging.log4j/log4j-core "2.7"]]}
              :snapshot {:git-version {:version-cmd "echo -snapshot"}}
              :appassem {:aot :all}

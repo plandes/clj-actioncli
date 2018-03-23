@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.26] - 2018-03-23
 ### Changed
+- Fix `resource-path` clojure 1.9 issue
 - Add 1.9 profile and fix tests for 1.9.
-
 
 ## [0.0.25] - 2018-02-21
 
@@ -112,10 +113,12 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...HEAD
-[0.0.24]: https://github.com/plandes/clj-actioncli/compare/v0.0.24...v0.0.25
-[0.0.23]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.24
-[0.0.22]: https://github.com/plandes/clj-actioncli/compare/v0.0.22...v0.0.21
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...HEAD
+[0.0.26]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...v0.0.26
+[0.0.25]: https://github.com/plandes/clj-actioncli/compare/v0.0.24...v0.0.25
+[0.0.24]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.24
+[0.0.23]: https://github.com/plandes/clj-actioncli/compare/v0.0.22...v0.0.23
+[0.0.22]: https://github.com/plandes/clj-actioncli/compare/v0.0.21...v0.0.22
 [0.0.21]: https://github.com/plandes/clj-actioncli/compare/v0.0.20...v0.0.21
 [0.0.20]: https://github.com/plandes/clj-actioncli/compare/v0.0.18...v0.0.20
 [0.0.18]: https://github.com/plandes/clj-actioncli/compare/v0.0.17...v0.0.18

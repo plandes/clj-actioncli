@@ -4,14 +4,16 @@
             [clojure.string :as s])
   (:require [zensols.actioncli.resource :refer :all]))
 
+(def root-pkg-pat
+  "^jar:file:.+pool/pool/[0-9.]+/pool-[0-9.]+\\.jar!/pool")
+
 (defn- init-sysprop []
   ;; multiple runs
   (System/clearProperty "zensols.data"))
 
 (defn- init-register []
   (register-resource :data :system-file "data" :system-default "../data")
-  (register-resource :runtime-gen :pre-path :data :system-file "db")
-  (register-resource :root-pkg :constant "clojure" :type :resource))
+  (register-resource :runtime-gen :pre-path :data :system-file "db"))
 
 (deftest test-resource
   (init-sysprop)
@@ -26,14 +28,15 @@
 
 (deftest test-java-resource
   (init-sysprop)
-  (register-resource :root-pkg :constant "clojure" :type :resource)
+  (register-resource :root-pkg :constant "pool" :type :resource)
   (is (not (nil? (resource-path :root-pkg))))
-  (is (re-matches #"^jar:file:.*org/clojure/clojure/[0-9A-Z-.]+/clojure-[0-9A-Z-.]+.jar!/clojure"
+  (is (re-matches (re-pattern root-pkg-pat)
                   (.toString (resource-path :root-pkg))))
-  (is (re-matches #"^jar:file:.*org/clojure/clojure/[0-9A-Z-.]+/clojure-[0-9A-Z-.]+.jar!/clojure/string.clj"
-                  (.toString (resource-path :root-pkg "string.clj"))))
-  (is (let [content (with-open [reader (io/reader (resource-path :root-pkg "string.clj"))]
-                      (slurp reader))]
+  (is (re-matches (re-pattern (str root-pkg-pat "/core.clj"))
+                  (.toString (resource-path :root-pkg "core.clj"))))
+  (is (let [content
+            (with-open [reader (io/reader (resource-path :root-pkg "core.clj"))]
+              (slurp reader))]
         (> (count content) 100))))
 
 (deftest test-prepath

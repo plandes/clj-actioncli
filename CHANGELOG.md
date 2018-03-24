@@ -8,10 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.27] - 2018-03-24
+### Changed
+- Fixed unit test for Clojure 1.9.0 dep.
+
+
 ## [0.0.26] - 2018-03-23
 ### Changed
 - Fix `resource-path` clojure 1.9 issue
 - Add 1.9 profile and fix tests for 1.9.
+
 
 ## [0.0.25] - 2018-02-21
 
@@ -113,7 +119,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.27...HEAD
+[0.0.27]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...v0.0.27
 [0.0.26]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...v0.0.26
 [0.0.25]: https://github.com/plandes/clj-actioncli/compare/v0.0.24...v0.0.25
 [0.0.24]: https://github.com/plandes/clj-actioncli/compare/v0.0.23...v0.0.24

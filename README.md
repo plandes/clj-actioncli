@@ -260,8 +260,8 @@ To build from source, do the folling:
 - Install [Leiningen](http://leiningen.org) (this is just a script)
 - Install [GNU make](https://www.gnu.org/software/make/)
 - Install [Git](https://git-scm.com)
-- Download the source: `git clone --recurse-submodules https://github.com/clj-mkproj && cd clj-mkproj`
-- Build the distribution binaries: `make dist`
+- Download the source: `git clone --recurse-submodules https://github.com/plandes/clj-actioncli && cd clj-actioncli`
+- Build and install: `make install`
 
 Note that you can also build a single jar file with all the dependencies with: `make uber`
 

@@ -60,6 +60,10 @@
   (let [stream (cond (string? res) (io/input-stream (io/resource res))
                      (instance? java.io.InputStream res) res
                      true (io/input-stream res))]
+    (if (nil? stream)
+      (->> (format "No such resource %s" res)
+           (ex-info {:resource res})
+           throw))
     (with-open [in stream]
       (LogUtil/config in))
     (log/debugf "configured with XML resource: %s" res)))

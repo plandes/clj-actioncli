@@ -231,13 +231,16 @@ Keys
   (let [msg (.getMessage e)]
     (if *log-error* (log/error e "action line parse error"))
     (binding [*out* *err*]
-      (if (instance? java.io.FileNotFoundException e)
-        (println (format "%sio error: %s" (program-fmt) msg))
-        (println (format "%serror: %s"
-                         (program-fmt)
-                         (if ex-data
-                           (.getMessage e)
-                           (.toString e)))))))
+      (cond (instance? java.io.FileNotFoundException e)
+            (println (format "%sio error: %s" (program-fmt) msg))
+            (instance? NullPointerException e)
+            (.printStackTrace e)
+            :else
+            (println (format "%serror: %s"
+                             (program-fmt)
+                             (if ex-data
+                               (.getMessage e)
+                               (.toString e)))))))
   (log/debugf "dumping JVM: %s, rethrow: %s"
               *dump-jvm-on-error* *rethrow-error*)
   (if *dump-jvm-on-error*

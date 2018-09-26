@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- The CLI parser prints stack trace on null pointer exception.  Otherwise you
+  just get `null` as the error message, which isn't useful.
+
+
 ## [0.0.27] - 2018-03-24
 ### Changed
 - Fixed unit test for Clojure 1.9.0 dep.

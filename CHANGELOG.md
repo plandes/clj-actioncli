@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.0.28] - 2018-10-26
 ### Changed
 - The CLI parser prints stack trace on null pointer exception.  Otherwise you
   just get `null` as the error message, which isn't useful.
@@ -123,7 +124,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.27...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.28...HEAD
+[0.0.28]: https://github.com/plandes/clj-actioncli/compare/v0.0.27...v0.0.28
 [0.0.27]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...v0.0.27
 [0.0.26]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...v0.0.26
 [0.0.25]: https://github.com/plandes/clj-actioncli/compare/v0.0.24...v0.0.25

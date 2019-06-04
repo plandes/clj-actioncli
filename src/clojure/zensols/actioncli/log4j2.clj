@@ -3,7 +3,7 @@
     zensols.actioncli.log4j2
   (:require [clojure.tools.logging :as log]
             [clojure.java.io :as io])
-  (:require [zensols.actioncli.factory :as fac])
+  (:require [clojure.tools.logging.impl :as fac])
   (:import (org.apache.logging.log4j LogManager Level)
            (com.zensols.log LogUtil)))
 

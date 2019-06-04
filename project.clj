@@ -21,7 +21,7 @@
   :javac-options ["-Xlint:unchecked"]
   :jar-exclusions [#".gitignore"]
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 
+
                  ;; command line
                  [org.clojure/tools.cli "0.3.5"]
 
@@ -29,7 +29,7 @@
                  [org.clojure/tools.nrepl "0.2.12"]
 
                  ;; logging
-                 [org.clojure/tools.logging "0.3.1"]
+                 [org.clojure/tools.logging "0.4.1"]
 
                  ;; serialization
                  [com.taoensso/nippy "2.14.0"]
@@ -40,6 +40,7 @@
                  ;; sandboxing - timeout
                  [clojail "1.0.6"]]
   :profiles {:1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :1.10 {:dependencies [[org.clojure/clojure "1.10.0"]]}
              :provided
              {:dependencies [[org.apache.logging.log4j/log4j-core "2.7"]]}
              :snapshot {:git-version {:version-cmd "echo -snapshot"}}

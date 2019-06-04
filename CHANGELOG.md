@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.29] - 2019-06-04
+### Removed
+- Name space zensols.actioncli.factory as this is now included in
+  [0.4.1](https://clojure.atlassian.net/browse/TLOG-19).
+### Changed
+- Upgrade org.clojure/tools.logging dep.
+
 
 ## [0.0.28] - 2018-10-26
 ### Changed

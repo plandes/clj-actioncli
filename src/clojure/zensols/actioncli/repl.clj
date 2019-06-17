@@ -1,8 +1,8 @@
 (ns ^{:doc "Add a REPL and provide a CLI command."
       :author "Paul Landes"}
     zensols.actioncli.repl
-  (:require [clojure.tools.nrepl.server :as replserv])
-  (:require [clojure.tools.nrepl.cmdline :as replcmd]))
+  (:require [nrepl.server :as replserv])
+  (:require [nrepl.cmdline :as replcmd]))
 
 (def ^:private default-port 12345)
 

@@ -26,7 +26,7 @@
                  [org.clojure/tools.cli "0.3.5"]
 
                  ;; repl
-                 [org.clojure/tools.nrepl "0.2.12"]
+                 [nrepl "0.6.0"]
 
                  ;; logging
                  [org.clojure/tools.logging "0.4.1"]

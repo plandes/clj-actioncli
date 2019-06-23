@@ -1,7 +1,7 @@
 language: clojure
-lein: 2.7.1
+lein: 2.9.1
 before_script:
   - mkdir -p target
 script: make checkdep test
 jdk:
-  - oraclejdk8
+  - openjdk8

@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [0.0.29] - 2019-06-04
+## [0.0.29] - 2019-06-23
 ### Removed
 - Name space zensols.actioncli.factory as this is now included in
   [0.4.1](https://clojure.atlassian.net/browse/TLOG-19).
 ### Changed
 - Upgrade org.clojure/tools.logging dep.
+- Upgrade to lein 2.8.1
 
 
 ## [0.0.28] - 2018-10-26
@@ -131,7 +132,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.28...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.29...HEAD
+[0.0.29]: https://github.com/plandes/clj-actioncli/compare/v0.0.28...v0.0.29
 [0.0.28]: https://github.com/plandes/clj-actioncli/compare/v0.0.27...v0.0.28
 [0.0.27]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...v0.0.27
 [0.0.26]: https://github.com/plandes/clj-actioncli/compare/v0.0.25...v0.0.26

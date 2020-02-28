@@ -5,7 +5,7 @@
             [clojure.java.io :as io])
   (:require [clojure.tools.logging.impl :as fac])
   (:import (org.apache.logging.log4j LogManager Level)
-           (com.zensols.log LogUtil)))
+           (com.zensols.log LogUtil LogExceptionHandler)))
 
 ;; add the Log4J2 factory
 (try
@@ -84,3 +84,14 @@
                    (change-log-level level)
                    true))
                "Invalid level (error warn info debug trace)"]]))
+
+(defn forward-uncaught-exceptions
+  "Swallow all exceptions by reporting them to the Log4J logging system.
+
+  If **logger** is given, use that Lo4J logger instance for the reporting.  All
+  exceptions are handled using the error level."
+  ([]
+   (LogExceptionHandler/register))
+  ([logger]
+   (if logger
+     (LogExceptionHandler/register logger))))

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.1.0] - 2020-02-28
+### Added
+- Add functionality to report all exceptions via the Log4J2 logging system.
+
 ## [0.0.29] - 2019-06-23
 ### Removed
 - Name space zensols.actioncli.factory as this is now included in
@@ -132,7 +137,8 @@ First major release.
 - Better help message printing
 
 
-[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.0.29...HEAD
+[Unreleased]: https://github.com/plandes/clj-actioncli/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/plandes/clj-actioncli/compare/v0.0.29...v0.1.0
 [0.0.29]: https://github.com/plandes/clj-actioncli/compare/v0.0.28...v0.0.29
 [0.0.28]: https://github.com/plandes/clj-actioncli/compare/v0.0.27...v0.0.28
 [0.0.27]: https://github.com/plandes/clj-actioncli/compare/v0.0.26...v0.0.27

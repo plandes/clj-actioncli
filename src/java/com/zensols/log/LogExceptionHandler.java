@@ -4,13 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Swallow all exceptions in this instance of the JVM by reporting them to the
- * logging system.
+ * <p>Swallow all exceptions in this instance of the JVM by reporting them to the
+ * logging system.</p>
  *
- * Attribution: shemnon on Stackoverflow.
+ * <p>Attribution: shemnon on Stackoverflow.</p>
  *
  * @author shemnon
- * @see a href="https://stackoverflow.com/questions/75218/how-can-i-detect-when-an-exceptions-been-thrown-globally-in-java"/>
+ * @see <a href="https://stackoverflow.com/questions/75218/how-can-i-detect-when-an-exceptions-been-thrown-globally-in-java"/>
  */
 public class LogExceptionHandler implements Thread.UncaughtExceptionHandler {
     private Logger logger;

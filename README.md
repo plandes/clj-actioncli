@@ -204,6 +204,16 @@ user=> (.getPath (res/resource-path :runtime-gen))
 ../new-data-path/db
 ```
 
+### Resource from the Class Path
+
+When creating resources from the Java class path (i.e. file system and jar
+agnostic locations), use `:resource` for the `:type` and `:constant` for the
+resource without a leading forward slash.  For example:
+
+```clojure
+(register-resource :root-pkg :constant "pool" :type :resource)
+```
+
 
 ### Resource Functions
 

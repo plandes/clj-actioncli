@@ -140,7 +140,9 @@
   the [resource
   test](https://github.com/plandes/clj-actioncli/blob/master/test/zensols/actioncli/resource_test.clj)
   and example of how to use this)
-  * **:type** the type of resource to return; one of `:resource` or `:file` (default)
+  * **:type** the type of resource to return; one of `:resource` or
+    `:file` (default); **Imporant**: when using `:resource` use the `:constant`
+     keyword for the value
   * **:pre-path** a key of a resource to prepend to the path
   * **:system-file** a file path of the resource--if the same name exists as a
   system property then that is used instead (see [[set-resource-property-format]])
